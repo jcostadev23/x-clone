@@ -6,8 +6,9 @@ type Coment = {
 export type Tweet = {
   _id: number;
   userId: number;
+  userName: string;
   date: string;
   description: string;
-  coments: Array<Coment>;
+  comments: Array<Coment>;
   likes: Array<number>;
 };
