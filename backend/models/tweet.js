@@ -5,6 +5,10 @@ const tweetSchema = new mongoose.Schema({
     type: Number,
     required: [false],
   },
+  userName: {
+    type: String,
+    required: [false],
+  },
   description: {
     type: String,
     required: [true, "Please add a name"],
@@ -13,7 +17,7 @@ const tweetSchema = new mongoose.Schema({
     type: Array,
     required: [false],
   },
-  coments: {
+  comments: {
     type: Array,
     required: [false],
   },
