@@ -21,7 +21,12 @@ const PostTweet = () => {
         <Input value={tweet} onChange={setTweet} />
       </section>
       <div className="flex justify-end m-2">
-        <Button type="submit">Post</Button>
+        <Button
+          type="submit"
+          label="Post"
+          applyMinWidth
+          backgroundColor="secondary"
+        />
       </div>
     </form>
   );
