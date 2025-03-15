@@ -11,4 +11,23 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.post("/", async (req, res) => {
+  try {
+    const tweet = req.body.tweet;
+
+    if (!tweet) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Tweet are required" });
+    }
+
+    const newTweet = new Tweet(tweet);
+    await newTweet.save();
+
+    res.status(200).json({ sucess: true, data: newTweet });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Something went wrong" });
+  }
+});
+
 module.exports = router;
