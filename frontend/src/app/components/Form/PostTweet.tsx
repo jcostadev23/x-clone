@@ -18,7 +18,11 @@ const PostTweet = () => {
         <span className="text-2xl text-white bg-indigo-500 p-4 rounded-full w-12 h-12 flex items-center justify-center">
           J
         </span>
-        <Input value={tweet} onChange={setTweet} />
+        <Input
+          value={tweet}
+          onChange={setTweet}
+          placeholder="What is happening?!"
+        />
       </section>
       <div className="flex justify-end m-2">
         <Button

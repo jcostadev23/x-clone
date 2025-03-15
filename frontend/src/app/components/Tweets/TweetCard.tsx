@@ -27,12 +27,14 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
           </span>
         </div>
         <h3 className="text-sm/7">{tweet.description}</h3>
-        <div className="mt-3">
-          {tweet.comments.map((comment) => (
-            <p key={comment.id}>{comment.comment}</p>
-          ))}
+        <div className="flex gap-2 mt-3 justify-items-center">
+          <div>
+            {tweet.comments.map((comment) => (
+              <p key={comment.id}>{comment.comment}</p>
+            ))}
+          </div>
+          <div>Likes: {tweet.likes.length}</div>
         </div>
-        <div>Likes: {tweet.likes.length}</div>
       </section>
     </div>
   );

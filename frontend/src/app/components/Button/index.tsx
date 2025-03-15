@@ -1,3 +1,4 @@
+import { clsx } from "clsx";
 import { ClickEvent } from "../types";
 
 const buttonColors = {
@@ -7,12 +8,11 @@ const buttonColors = {
 };
 
 type Props = {
-  type: "button" | "submit" | "reset";
+  type?: "button" | "submit" | "reset";
   onClick?: ClickEvent;
   label: string;
-  backgroundColor: "primary" | "secondary" | "danger";
+  backgroundColor?: "primary" | "secondary" | "danger";
   applyMinWidth: boolean;
-  size?: string;
 };
 const Button: React.FC<Props> = ({
   type = "button",
@@ -20,11 +20,8 @@ const Button: React.FC<Props> = ({
   label = "Click",
   applyMinWidth = false,
   backgroundColor = "primary",
-  size = "medium",
   ...props
 }) => {
-  const width = applyMinWidth ? "min-w-20 px-2 py-1" : "min-w-50 px-4 py-2";
-
   const handleClick: ClickEvent = (event) => {
     if (onClick) {
       onClick(event);
@@ -33,7 +30,11 @@ const Button: React.FC<Props> = ({
 
   return (
     <button
-      className={`${buttonColors[backgroundColor]} text-white font-bold rounded-3xl ${width}`}
+      className={clsx(
+        "text-white font-bold rounded-3xl ",
+        applyMinWidth ? "min-w-20 px-2 py-1" : "min-w-50 px-4 py-2",
+        buttonColors[backgroundColor]
+      )}
       type={type}
       onClick={handleClick}
       {...props}
