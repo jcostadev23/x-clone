@@ -1,14 +1,13 @@
-import { Tweet } from "./types";
-import TweetCard from "./components/Tweets/TweetCard";
 import PostTweet from "./components/Form/PostTweet";
 import Menu from "./components/Menu";
-import Sugestions from "./components/Sugestions/RhsSugestions";
 import ShowMorePosts from "./components/ShowMorePosts";
+import Sugestions from "./components/Sugestions/RhsSugestions";
+import TweetCard from "./components/Tweets/TweetCard";
+import { Tweet } from "./types";
+import { getAllTweets } from "./utils/apiCalls";
 
 export default async function Home() {
-  const tweets: Array<Tweet> = await fetch("http://localhost:4000/tweets")
-    .then((resp) => resp.json())
-    .then((data) => data.data);
+  const tweets: Array<Tweet> = await getAllTweets();
 
   return (
     <div className="flex flex-col gap-6 p-5 md:flex-row md:gap-8 bg-gray-50 dark:bg-gray-800">

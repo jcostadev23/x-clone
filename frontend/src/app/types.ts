@@ -4,10 +4,10 @@ type Coment = {
 };
 
 export type Tweet = {
-  _id: number;
+  _id?: number;
   userId: number;
   userName: string;
-  date: string;
+  date?: string;
   description: string;
   comments: Array<Coment>;
   likes: Array<number>;
