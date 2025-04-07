@@ -30,4 +30,29 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const tweetId = req.params.id;
+    const tweet = await Tweet.findById(tweetId);
+
+    if (!tweet) {
+      return res.status(404).json({ sucess: false, error: "Tweet not found" });
+    }
+
+    const liked = tweet.likes.includes(userId);
+
+    if (liked) {
+      tweet.likes = tweet.likes.filter((id) => id !== userId);
+    } else {
+      tweet.likes.push(userId);
+    }
+
+    await tweet.save();
+    res.status(200).json({ sucess: true, data: tweet });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Something went wrong" });
+  }
+});
+
 module.exports = router;
