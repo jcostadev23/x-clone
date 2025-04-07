@@ -2,12 +2,12 @@ import { Tweet } from "@/app/types";
 import { formatDate } from "@/app/utils/dateFormater";
 import Image from "next/image";
 import xIcon from "../../../public/x-icon.jpg";
-import LikeIcon from "../LikeIcon";
+import BookMarkIcon from "../BookMarkIcon";
+import LikeUnlikeButton from "../TweetButtons/LikeUnlikeButton";
 import CommentIcon from "../CommentIcon";
 import RepostIcon from "../RepostIcon";
-import ViewIcon from "../ViewIcon";
-import BookMarkIcon from "../BookMarkIcon";
 import ShareIcon from "../ShareIcon";
+import ViewIcon from "../ViewIcon";
 
 type Props = {
   tweet: Tweet;
@@ -47,9 +47,7 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
           <RepostIcon />
           123k
         </div>
-        <div className="flex gap-1.5 items-center text-gray-600 hover:text-red-600">
-          <LikeIcon /> {tweet.likes.length}
-        </div>
+        <LikeUnlikeButton tweet={tweet} />
         <div className="flex gap-1.5 items-center text-gray-600 hover:text-blue-500">
           <ViewIcon /> 4.5m
         </div>
