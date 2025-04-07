@@ -22,3 +22,22 @@ export const postTweet = async (tweet: Tweet) => {
   const data = await response.json();
   return data.data;
 };
+
+export const tweetLikeUnlike = async (tweetId: number, userId: number) => {
+  try {
+    const response = await fetch(`${url}${tweetId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId,
+      }),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error on put likes", error);
+    return false;
+  }
+};
