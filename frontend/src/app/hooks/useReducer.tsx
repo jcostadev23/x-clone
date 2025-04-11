@@ -1,15 +1,12 @@
 "use client";
 
 import { createContext, ReactNode, useContext, useReducer } from "react";
-import { Tweet } from "../types";
-
-type State = {
-  tweets: Array<Tweet>;
-};
+import { State, Tweet } from "../types";
+import { actions, ActionsType } from "../helpers/reducer";
 
 type Action =
-  | { type: "SET_TWEETS"; payload: Array<Tweet> }
-  | { type: "LIKE_TWEET"; payload: { id: number; userId: number } };
+  | { type: ActionsType.SET_TWEETS; payload: Array<Tweet> }
+  | { type: ActionsType.LIKE_TWEET; payload: { id: number; userId: number } };
 
 type Dispatch = (action: Action) => void;
 
@@ -32,20 +29,10 @@ export const useReducerContext = () => {
 
 const reducer = (state: State, action: Action) => {
   switch (action.type) {
-    case "SET_TWEETS":
-      return {
-        ...state,
-        tweets: action.payload,
-      };
-    case "LIKE_TWEET":
-      return {
-        ...state,
-        tweets: state.tweets.map((tweet) =>
-          tweet._id === action.payload.id
-            ? { ...tweet, likes: [...tweet.likes, action.payload.userId] }
-            : tweet
-        ),
-      };
+    case ActionsType.SET_TWEETS:
+      return actions[action.type](state, action.payload);
+    case ActionsType.LIKE_TWEET:
+      return actions[action.type](state, action.payload);
     default:
       return state;
   }
