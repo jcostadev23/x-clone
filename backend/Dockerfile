@@ -1,4 +1,4 @@
-# Use node18
+# backend/Dockerfile
 FROM node:18
 
 # Create work directory
