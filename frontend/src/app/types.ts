@@ -12,3 +12,7 @@ export type Tweet = {
   comments: Array<Coment>;
   likes: Array<number>;
 };
+
+export type State = {
+  tweets: Array<Tweet>;
+};
