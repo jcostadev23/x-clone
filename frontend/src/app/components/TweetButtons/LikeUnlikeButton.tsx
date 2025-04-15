@@ -1,10 +1,12 @@
 "use client";
 
-import { clsx } from "clsx";
-import { tweetLikeUnlike } from "@/app/utils/apiCalls";
-import LikeIcon from "../LikeIcon";
+import { useAppContext } from "@/app/hooks/useAppContext";
 import { Tweet } from "@/app/types";
+import { tweetLikeUnlike } from "@/app/utils/apiCalls";
+import { clsx } from "clsx";
+import { useRouter } from "next/navigation";
 import React from "react";
+import LikeIcon from "../Icons/LikeIcon";
 
 interface Props {
   tweet: Tweet;
@@ -12,6 +14,8 @@ interface Props {
 
 const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
   const userId = 38;
+  const router = useRouter();
+  const { setIsLoading } = useAppContext();
   const liked = tweet.likes.includes(userId);
 
   const handleClick = async (id?: number) => {
@@ -19,10 +23,15 @@ const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
       return false;
     }
 
+    setIsLoading(true);
     const resp = await tweetLikeUnlike(id, userId);
+    setIsLoading(false);
+
     if (!resp) {
       return false;
     }
+
+    router.refresh();
   };
 
   return (

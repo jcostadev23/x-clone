@@ -2,12 +2,12 @@ import { Tweet } from "@/app/types";
 import { formatDate } from "@/app/utils/dateFormater";
 import Image from "next/image";
 import xIcon from "../../../public/x-icon.jpg";
-import BookMarkIcon from "../BookMarkIcon";
+import BookMarkIcon from "../Icons/BookMarkIcon";
 import LikeUnlikeButton from "../TweetButtons/LikeUnlikeButton";
-import CommentIcon from "../CommentIcon";
-import RepostIcon from "../RepostIcon";
-import ShareIcon from "../ShareIcon";
-import ViewIcon from "../ViewIcon";
+import CommentIcon from "../Icons/CommentIcon";
+import RepostIcon from "../Icons/RepostIcon";
+import ShareIcon from "../Icons/ShareIcon";
+import ViewIcon from "../Icons/ViewIcon";
 
 type Props = {
   tweet: Tweet;
