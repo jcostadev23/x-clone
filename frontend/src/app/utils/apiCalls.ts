@@ -1,11 +1,18 @@
 import { Tweet } from "../types";
 
-const url = "http://localhost:4000/tweets/";
+const url = `${
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"
+}/tweets/`;
 
 export const getAllTweets = async () => {
-  return await fetch(url)
-    .then((resp) => resp.json())
-    .then((data) => data.data);
+  let tweets: { data: Array<Tweet> } = { data: [] };
+  try {
+    const resp = await fetch(url);
+    tweets = await resp.json();
+  } catch (error) {
+    console.warn("Error on fetch tweets", error);
+  }
+  return tweets.data;
 };
 
 export const postTweet = async (tweet: Tweet) => {

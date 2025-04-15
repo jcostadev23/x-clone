@@ -1,24 +1,22 @@
 # docker-compose.yml
-version: "3.8"
+version: "3.9"
 
 services:
   backend:
     build: ./backend
     ports:
-      - "4000:5000"
-    volumes:
-      - ./backend:/server
-    networks:
-      - app-network
+      - "4000:4000"
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
     ports:
-      - "3000:3000"
-    networks:
-      - app-network
+      - "3000:80"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:4000
     depends_on:
       - backend
-
-networks:
-  app-network:
+    restart: unless-stopped
