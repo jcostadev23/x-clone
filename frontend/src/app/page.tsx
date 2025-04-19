@@ -1,4 +1,4 @@
-import PostTweet from "./components/Form/PostTweet";
+import PostTweet from "./components/PostTweet";
 import Menu from "./components/Menu";
 import ShowMorePosts from "./components/ShowMorePosts";
 import Sugestions from "./components/Sugestions/RhsSugestions";

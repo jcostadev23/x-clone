@@ -4,10 +4,10 @@ import Image from "next/image";
 import xIcon from "../../../public/x-icon.jpg";
 import BookMarkIcon from "../Icons/BookMarkIcon";
 import LikeUnlikeButton from "../TweetButtons/LikeUnlikeButton";
-import CommentIcon from "../Icons/CommentIcon";
 import RepostIcon from "../Icons/RepostIcon";
 import ShareIcon from "../Icons/ShareIcon";
 import ViewIcon from "../Icons/ViewIcon";
+import Comment from "../PostComment";
 
 type Props = {
   tweet: Tweet;
@@ -40,9 +40,7 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
         </section>
       </div>
       <div className="flex gap-2 m-3 justify-between max-w-full">
-        <div className="flex gap-1.5 items-center text-gray-600 hover:text-blue-500">
-          <CommentIcon /> {tweet.comments.length}
-        </div>
+        <Comment tweet={tweet} />
         <div className="flex gap-1.5 items-center text-gray-600 hover:text-emerald-500">
           <RepostIcon />
           123k
