@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import PostTweet from "../app/components/Form/PostTweet";
+import PostTweet from "../app/components/PostTweet";
 
 const meta = {
   title: "Example/PostTweet",

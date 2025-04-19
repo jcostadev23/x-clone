@@ -55,4 +55,23 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.put("/:id/comment", async (req, res) => {
+  try {
+    const { comment } = req.body;
+    const tweetId = req.params.id;
+    const tweet = await Tweet.findById(tweetId);
+
+    if (!tweet) {
+      return res.status(404).json({ sucess: false, error: "Tweet not found" });
+    }
+
+    tweet.comments.push(comment);
+    await tweet.save();
+
+    res.status(200).json({ sucess: true, data: tweet });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Something went wrong" });
+  }
+});
+
 module.exports = router;

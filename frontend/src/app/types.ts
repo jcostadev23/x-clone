@@ -1,4 +1,4 @@
-type Coment = {
+export type Comment = {
   id: number;
   comment: string;
 };
@@ -9,7 +9,7 @@ export type Tweet = {
   userName: string;
   date?: string;
   description: string;
-  comments: Array<Coment>;
+  comments: Array<Comment>;
   likes: Array<number>;
 };
 

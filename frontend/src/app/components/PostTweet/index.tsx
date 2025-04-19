@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Input from "./Input";
+import Input from "../Form/Input";
 import Button from "../Button";
 import { FormEvents } from "../types";
 import { postTweet } from "@/app/utils/apiCalls";

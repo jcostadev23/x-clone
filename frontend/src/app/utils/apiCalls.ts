@@ -1,4 +1,4 @@
-import { Tweet } from "../types";
+import { Tweet, Comment } from "../types";
 
 const url = `${
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"
@@ -45,6 +45,25 @@ export const tweetLikeUnlike = async (tweetId: number, userId: number) => {
     return data;
   } catch (error) {
     console.error("Error on put likes", error);
+    return false;
+  }
+};
+
+export const addComment = async (tweetId: number, comment: Comment) => {
+  try {
+    const response = await fetch(`${url}${tweetId}/comment`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        comment: comment,
+      }),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error on put Comment", error);
     return false;
   }
 };
