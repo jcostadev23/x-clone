@@ -1,8 +1,6 @@
 "use client";
 
 import React from "react";
-import Button from "../../Button";
-import Input from "../../Form/Input";
 import TextArea from "../../Form/TextArea";
 
 type Props = {
