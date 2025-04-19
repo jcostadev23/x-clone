@@ -2,6 +2,7 @@
 
 import React from "react";
 import TextArea from "../../Form/TextArea";
+import Button from "../../Button";
 
 type Props = {
   value: string;
@@ -11,8 +12,16 @@ type Props = {
 };
 const Form: React.FC<Props> = ({ onSubmit, value, onChange, placeHolder }) => {
   return (
-    <form onSubmit={onSubmit}>
+    <form className="flex flex-col justify-between h-full" onSubmit={onSubmit}>
       <TextArea value={value} onChange={onChange} placeholder={placeHolder} />
+      <div className="flex justify-end m-2">
+        <Button
+          type="submit"
+          label="Reply"
+          applyMinWidth
+          backgroundColor="secondary"
+        />
+      </div>
     </form>
   );
 };
