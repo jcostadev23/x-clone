@@ -6,6 +6,7 @@ import { tweetLikeUnlike } from "@/app/utils/apiCalls";
 import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
 import React from "react";
+import ButtonIcon from "../ButtonIcon";
 import LikeIcon from "../Icons/LikeIcon";
 
 interface Props {
@@ -35,16 +36,13 @@ const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
   };
 
   return (
-    <button
-      type="button"
-      className={clsx(
-        "flex gap-1.5 items-center text-gray-600 hover:text-red-600",
-        liked && "text-red-600"
-      )}
+    <ButtonIcon
+      className={clsx("hover:text-red-600", liked && "text-red-600")}
       onClick={() => handleClick(tweet._id)}
+      icon={<LikeIcon />}
     >
-      <LikeIcon /> {tweet.likes.length}
-    </button>
+      {tweet.likes.length}
+    </ButtonIcon>
   );
 };
 
