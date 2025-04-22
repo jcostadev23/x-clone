@@ -1,14 +1,15 @@
 "use client";
 
-import { useReducerContext } from "@/app/hooks/useReducer";
-import TweetCard from "./TweetCard";
-import { useEffect } from "react";
-import { useAppContext } from "@/app/hooks/useAppContext";
-import { getAllTweets } from "@/app/utils/apiCalls";
 import { ActionsType } from "@/app/helpers/reducer";
+import { useAppContext } from "@/app/hooks/useAppContext";
+import { useReducerContext } from "@/app/hooks/useReducer";
+import { getAllTweets } from "@/app/utils/apiCalls";
+import { useEffect } from "react";
+import Loading from "../Loader";
+import TweetCard from "./TweetCard";
 
 const Tweets = () => {
-  const { setIsLoading } = useAppContext();
+  const { isLoading, setIsLoading } = useAppContext();
   const { state, dispatch } = useReducerContext();
 
   useEffect(() => {
@@ -30,6 +31,7 @@ const Tweets = () => {
 
   return (
     <>
+      {isLoading && <Loading />}
       {state.tweets.map((tweet) => (
         <TweetCard key={tweet._id} tweet={tweet} />
       ))}
