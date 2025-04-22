@@ -1,10 +1,11 @@
 "use client";
 
+import { ActionsType } from "@/app/helpers/reducer";
 import { useAppContext } from "@/app/hooks/useAppContext";
+import { useReducerContext } from "@/app/hooks/useReducer";
 import { Tweet } from "@/app/types";
-import { tweetLikeUnlike } from "@/app/utils/apiCalls";
+import { getAllTweets, tweetLikeUnlike } from "@/app/utils/apiCalls";
 import { clsx } from "clsx";
-import { useRouter } from "next/navigation";
 import React from "react";
 import ButtonIcon from "../ButtonIcon";
 import LikeIcon from "../Icons/LikeIcon";
@@ -15,8 +16,8 @@ interface Props {
 
 const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
   const userId = 38;
-  const router = useRouter();
   const { setIsLoading } = useAppContext();
+  const { dispatch } = useReducerContext();
   const liked = tweet.likes.includes(userId);
 
   const handleClick = async (id?: number) => {
@@ -32,7 +33,18 @@ const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
       return false;
     }
 
-    router.refresh();
+    setIsLoading(true);
+    const tweets = await getAllTweets();
+    setIsLoading(false);
+
+    if (!tweets) {
+      return false;
+    }
+
+    dispatch({
+      type: ActionsType.SET_TWEETS,
+      payload: tweets,
+    });
   };
 
   return (
