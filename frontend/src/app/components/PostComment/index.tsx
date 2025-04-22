@@ -2,7 +2,6 @@
 
 import { Tweet } from "@/app/types";
 import React, { useCallback, useState } from "react";
-import Button from "../Button";
 import ButtonIcon from "../ButtonIcon";
 import Form from "../Comments/Form";
 import CommentIcon from "../Icons/CommentIcon";
@@ -27,7 +26,7 @@ const Comment: React.FC<Props> = ({ tweet }) => {
     setIsLoading(true);
     await addComment(tweet._id, { id: tweet.userId, comment });
     setIsLoading(false);
-  }, [comment, tweet._id]);
+  }, [comment, tweet.userId, tweet._id, setIsLoading]);
 
   return (
     <div>

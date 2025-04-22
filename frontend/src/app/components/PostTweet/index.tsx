@@ -1,22 +1,52 @@
 "use client";
 
+import { ActionsType } from "@/app/helpers/reducer";
+import { useAppContext } from "@/app/hooks/useAppContext";
+import { useReducerContext } from "@/app/hooks/useReducer";
+import { getAllTweets, postTweet } from "@/app/utils/apiCalls";
 import { useState } from "react";
-import Input from "../Form/Input";
 import Button from "../Button";
+import Input from "../Form/Input";
 import { FormEvents } from "../types";
-import { postTweet } from "@/app/utils/apiCalls";
 
 const PostTweet = () => {
   const [tweet, setTweet] = useState("");
+  const { setIsLoading } = useAppContext();
+  const { dispatch } = useReducerContext();
 
   const onSubmit = async (event: FormEvents) => {
     event.preventDefault();
-    const result = await postTweet({
+    if (!tweet.trim()) {
+      return;
+    }
+
+    setIsLoading(true);
+    const response = await postTweet({
       userId: 21,
       userName: "Costa",
       description: tweet,
       comments: [],
       likes: [],
+    });
+
+    setIsLoading(false);
+
+    if (!response) {
+      return false;
+    }
+
+    setTweet("");
+    setIsLoading(true);
+    const tweets = await getAllTweets();
+    setIsLoading(false);
+
+    if (!tweets) {
+      return false;
+    }
+
+    dispatch({
+      type: ActionsType.SET_TWEETS,
+      payload: tweets,
     });
   };
 
