@@ -1,15 +1,9 @@
-const path = require("path");
-const express = require("express");
-require("dotenv").config();
-const port = parseInt(process.env.PORT) || 8080;
-const connectDataBase = require("./config/db");
-const cors = require("cors");
+const { cors, path, connectDataBase, express, port } = require("./dependecies");
 
 connectDataBase();
 
 const app = express();
 app.use(cors());
-// cores({origin: ["http://localhost:5173", "http://localhost:3000"],credentials: true, })
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
@@ -21,5 +15,8 @@ app.get("/", (req, res) => {
 
 const xcloneRouter = require("./routes/xclone");
 app.use("/tweets", xcloneRouter);
+
+const usersRouter = require("./routes/users");
+app.use("/users", usersRouter);
 
 app.listen(port, () => console.log(`Server listening on port: ${port}`));

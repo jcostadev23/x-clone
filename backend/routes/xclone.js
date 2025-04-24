@@ -1,5 +1,4 @@
-const express = require("express");
-const router = express.Router();
+const { router } = require("../dependecies");
 const Tweet = require("../models/tweet");
 
 router.get("/", async (req, res) => {
