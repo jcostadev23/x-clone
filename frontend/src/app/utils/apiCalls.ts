@@ -1,13 +1,11 @@
 import { Tweet, Comment } from "../types";
 
-const url = `${
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"
-}/tweets/`;
+const url = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/`;
 
 export const getAllTweets = async () => {
   let tweets: { data: Array<Tweet> } = { data: [] };
   try {
-    const resp = await fetch(url);
+    const resp = await fetch(`${url}tweets/`);
     tweets = await resp.json();
   } catch (error) {
     console.warn("Error on fetch tweets", error);
@@ -16,7 +14,7 @@ export const getAllTweets = async () => {
 };
 
 export const postTweet = async (tweet: Tweet) => {
-  const response = await fetch(url, {
+  const response = await fetch(`${url}tweets/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,7 +30,7 @@ export const postTweet = async (tweet: Tweet) => {
 
 export const tweetLikeUnlike = async (tweetId: number, userId: number) => {
   try {
-    const response = await fetch(`${url}${tweetId}`, {
+    const response = await fetch(`${url}tweets/${tweetId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +49,7 @@ export const tweetLikeUnlike = async (tweetId: number, userId: number) => {
 
 export const addComment = async (tweetId: number, comment: Comment) => {
   try {
-    const response = await fetch(`${url}${tweetId}/comment`, {
+    const response = await fetch(`${url}tweets/${tweetId}/comment`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -66,4 +64,15 @@ export const addComment = async (tweetId: number, comment: Comment) => {
     console.error("Error on put Comment", error);
     return false;
   }
+};
+
+export const getAllUsers = async () => {
+  let users: { data: Array<Record<string, string>> } = { data: [] };
+  try {
+    const resp = await fetch(`${url}users`);
+    users = await resp.json();
+  } catch (error) {
+    console.warn("Error on fetch tweets", error);
+  }
+  return users.data;
 };
