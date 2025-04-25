@@ -12,7 +12,7 @@ type Props = {
   onClick?: ClickEvent;
   label: string;
   backgroundColor?: "primary" | "secondary" | "danger";
-  applyMinWidth: boolean;
+  applyMinWidth?: boolean;
 };
 const Button: React.FC<Props> = ({
   type = "button",
