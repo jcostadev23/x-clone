@@ -1,14 +1,18 @@
-"use client";
-
 import CloseIcon from "../Icons/CloseIcon";
 
 type Props = {
+  title: string;
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
 };
 
-const Modal: React.FC<Props> = ({ isOpen, onClose, children }) => {
+const Modal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  children,
+  title = "Modal",
+}) => {
   if (!isOpen) {
     return null;
   }
@@ -16,15 +20,17 @@ const Modal: React.FC<Props> = ({ isOpen, onClose, children }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
-        className="bg-white w-[500px] h-[300px] p-2 rounded-lg shadow-lg relative flex flex-col"
+        className="bg-white w-[500px] h-[300px] rounded-lg shadow-lg relative flex flex-col gap-2"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </button>
+        <div className="flex items-center justify-between text-white bg-blue-400 w-full px-4 py-1">
+          {title}
+          <button onClick={onClose}>
+            <span className="cursor-pointer">
+              <CloseIcon />
+            </span>
+          </button>
+        </div>
         {children}
       </div>
     </div>
