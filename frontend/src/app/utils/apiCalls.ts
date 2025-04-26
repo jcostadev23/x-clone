@@ -91,3 +91,26 @@ export const postUser = async (user: User) => {
   const data = await response.json();
   return data.data;
 };
+
+export const signIn = async (user: {
+  userName: string;
+  passwordHash: string;
+}) => {
+  let userData: { data: Record<string, string> } = { data: {} };
+  try {
+    const resp = await fetch(`${url}signin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user,
+      }),
+    });
+
+    userData = await resp.json();
+  } catch (error) {
+    console.error("Error on Sign in", error);
+  }
+  return userData.data;
+};
