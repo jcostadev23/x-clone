@@ -15,7 +15,10 @@ app.get("/", (req, res) => {
 
 const xcloneRouter = require("./routes/xclone");
 const usersRouter = require("./routes/users");
+const userSignInRouter = require("./routes/userSignIn");
+
 app.use("/tweets", xcloneRouter);
 app.use("/users", usersRouter);
+app.use("/signin", userSignInRouter);
 
 app.listen(port, () => console.log(`Server listening on port: ${port}`));
