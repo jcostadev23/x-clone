@@ -1,18 +1,13 @@
 import CloseIcon from "../Icons/CloseIcon";
 
 type Props = {
-  title: string;
+  title?: string;
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
 };
 
-const Modal: React.FC<Props> = ({
-  isOpen,
-  onClose,
-  children,
-  title = "Modal",
-}) => {
+const Modal: React.FC<Props> = ({ isOpen, onClose, children, title }) => {
   if (!isOpen) {
     return null;
   }
@@ -20,11 +15,11 @@ const Modal: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
-        className="bg-white w-[500px] h-[300px] rounded-lg shadow-lg relative flex flex-col gap-2"
+        className="bg-white w-[600px] rounded-lg shadow-lg relative flex flex-col gap-2"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between text-white bg-blue-400 w-full px-4 py-1">
-          {title}
+        <div className="flex items-center justify-between text-gray-500 w-full px-4 py-1">
+          {title ?? " "}
           <button onClick={onClose}>
             <span className="cursor-pointer">
               <CloseIcon />
