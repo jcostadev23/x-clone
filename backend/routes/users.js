@@ -1,4 +1,5 @@
-const { router } = require("../dependecies");
+const { express } = require("../dependecies");
+const router = express.Router();
 const User = require("../models/users");
 
 router.get("/", async (req, res) => {

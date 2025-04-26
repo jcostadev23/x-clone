@@ -12,7 +12,8 @@ type Props = {
   onClick?: ClickEvent;
   label: string;
   backgroundColor?: "primary" | "secondary" | "danger";
-  applyMinWidth: boolean;
+  applyMinWidth?: boolean;
+  className?: string;
 };
 const Button: React.FC<Props> = ({
   type = "button",
@@ -20,6 +21,7 @@ const Button: React.FC<Props> = ({
   label = "Click",
   applyMinWidth = false,
   backgroundColor = "primary",
+  className,
   ...props
 }) => {
   const handleClick: ClickEvent = (event) => {
@@ -33,7 +35,8 @@ const Button: React.FC<Props> = ({
       className={clsx(
         "text-white font-bold rounded-3xl ",
         applyMinWidth ? "min-w-20 px-2 py-1" : "min-w-50 px-4 py-2",
-        buttonColors[backgroundColor]
+        buttonColors[backgroundColor],
+        className
       )}
       type={type}
       onClick={handleClick}

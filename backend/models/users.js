@@ -13,6 +13,10 @@ const usersSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add a password"],
   },
+  birthDate: {
+    type: String,
+    required: [true, "Please add your Date of birth"],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

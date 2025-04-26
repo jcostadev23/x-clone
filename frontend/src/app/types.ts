@@ -16,3 +16,11 @@ export type Tweet = {
 export type State = {
   tweets: Array<Tweet>;
 };
+
+export type User = {
+  _id?: number;
+  userName: string;
+  email: string;
+  birthDate: string;
+  passwordHash: string;
+};

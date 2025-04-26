@@ -1,4 +1,4 @@
-import { Tweet, Comment } from "../types";
+import { Tweet, Comment, User } from "../types";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/`;
 
@@ -69,10 +69,25 @@ export const addComment = async (tweetId: number, comment: Comment) => {
 export const getAllUsers = async () => {
   let users: { data: Array<Record<string, string>> } = { data: [] };
   try {
-    const resp = await fetch(`${url}users`);
+    const resp = await fetch(`${url}users/`);
     users = await resp.json();
   } catch (error) {
     console.warn("Error on fetch tweets", error);
   }
   return users.data;
+};
+
+export const postUser = async (user: User) => {
+  const response = await fetch(`${url}users/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user,
+    }),
+  });
+
+  const data = await response.json();
+  return data.data;
 };
