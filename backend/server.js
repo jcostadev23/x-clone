@@ -14,9 +14,8 @@ app.get("/", (req, res) => {
 });
 
 const xcloneRouter = require("./routes/xclone");
-app.use("/tweets", xcloneRouter);
-
 const usersRouter = require("./routes/users");
+app.use("/tweets", xcloneRouter);
 app.use("/users", usersRouter);
 
 app.listen(port, () => console.log(`Server listening on port: ${port}`));
