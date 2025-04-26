@@ -8,11 +8,13 @@ import Button from "../components/Button";
 import Loading from "../components/Loader";
 import Modal from "../components/Modal";
 import UserForm from "../components/User/Form";
+import SignInForm from "../components/User/SignInForm";
 import { useAppContext } from "../hooks/useAppContext";
 
 const UserPage = () => {
   const { isLoading } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSignIn, setIsSignIn] = useState(false);
 
   return (
     <>
@@ -26,13 +28,18 @@ const UserPage = () => {
         <Image width={300} height={300} alt="x image" src={xIcon} />
         <div className="flex items-center">
           <div className="flex flex-col gap-2">
+            <Button onClick={() => setIsOpen(true)} label="Create account" />
             <Button
-              onClick={() => setIsOpen(true)}
-              label="Create account"
-            ></Button>
+              onClick={() => setIsSignIn(true)}
+              label="Sign in"
+              backgroundColor="secondary"
+            />
           </div>
         </div>
       </div>
+      <Modal isOpen={isSignIn} onClose={() => setIsSignIn(false)}>
+        <SignInForm handleClose={setIsSignIn} />
+      </Modal>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <UserForm handleClose={setIsOpen} />
       </Modal>
