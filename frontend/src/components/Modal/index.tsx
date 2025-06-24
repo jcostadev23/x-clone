@@ -1,4 +1,4 @@
-import CloseIcon from "../Icons/CloseIcon";
+import CloseIcon from "../../components/Icons/CloseIcon";
 
 type Props = {
   title?: string;

@@ -1,13 +1,13 @@
 "use client";
 
-import { ActionsType } from "@/app/helpers/reducer";
-import { useAppContext } from "@/app/hooks/useAppContext";
-import { useReducerContext } from "@/app/hooks/useReducer";
-import { Tweet } from "@/app/types";
-import { addComment, getAllTweets } from "@/app/utils/apiCalls";
+import { ActionsType } from "@/helpers/reducer";
+import { useAppContext } from "@/hooks/useAppContext";
+import { useReducerContext } from "@/hooks/useReducer";
+import { Tweet } from "@/types";
+import { addComment, getAllTweets } from "@/utils/apiCalls";
 import React, { useCallback, useState } from "react";
 import ButtonIcon from "../ButtonIcon";
-import Form from "../Comments/Form";
+import Form from "../../components/Comments/Form";
 import CommentIcon from "../Icons/CommentIcon";
 import Modal from "../Modal";
 

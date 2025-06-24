@@ -1,9 +1,9 @@
-import Menu from "./components/Menu";
-import PostTweet from "./components/PostTweet";
-import ShowMorePosts from "./components/ShowMorePosts";
-import Sugestions from "./components/Sugestions/RhsSugestions";
-import Tweets from "./components/Tweets";
-import { ReducerProvider } from "./hooks/useReducer";
+import Menu from "@/components/Menu";
+import PostTweet from "@/components/PostTweet";
+import ShowMorePosts from "@/components/ShowMorePosts";
+import Sugestions from "@/components/Sugestions/RhsSugestions";
+import Tweets from "@/components/Tweets";
+import { ReducerProvider } from "@/hooks/useReducer";
 
 export default async function Home() {
   return (

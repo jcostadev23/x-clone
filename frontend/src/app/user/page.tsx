@@ -1,16 +1,16 @@
 "use client";
 
+import Button from "@/components/Button";
+import Loading from "@/components/Loader";
+import Modal from "@/components/Modal";
+import UserForm from "@/components/User/Form";
+import SignInForm from "@/components/User/SignInForm";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useAppContext } from "../../hooks/useAppContext";
 import xIcon from "../../public/x-logo.png";
-import Button from "../components/Button";
-import Loading from "../components/Loader";
-import Modal from "../components/Modal";
-import UserForm from "../components/User/Form";
-import SignInForm from "../components/User/SignInForm";
-import { useAppContext } from "../hooks/useAppContext";
 
 const UserPage = () => {
   const { isLoading } = useAppContext();

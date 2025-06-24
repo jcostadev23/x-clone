@@ -1,4 +1,4 @@
-import { Tweet } from "@/app/types";
+import { Tweet } from "@/types";
 import TweetCardFooter from "./TweetCardFooter";
 import TweetCardHeader from "./TweetCardHeader";
 

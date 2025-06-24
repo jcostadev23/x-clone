@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useContext, useReducer } from "react";
 import { State, Tweet } from "../types";
-import { actions, ActionsType } from "../helpers/reducer";
+import { actions, ActionsType } from "@/helpers/reducer";
 
 type Action =
   | { type: ActionsType.SET_TWEETS; payload: Array<Tweet> }

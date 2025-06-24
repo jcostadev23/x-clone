@@ -1,8 +1,8 @@
 import Image from "next/image";
-import xIcon from "../../../public/x-icon.jpg";
-import { Tweet } from "@/app/types";
+import xIcon from "../../public/x-icon.jpg";
+import { Tweet } from "@/types";
 import React from "react";
-import { formatDate } from "@/app/utils/dateFormater";
+import { formatDate } from "@/utils/dateFormater";
 
 type Props = {
   tweet: Tweet;
