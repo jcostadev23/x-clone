@@ -1,7 +1,8 @@
 "use cliente";
 
-import { useAppContext } from "@/app/hooks/useAppContext";
-import { signIn } from "@/app/utils/apiCalls";
+import { useAppContext } from "@/hooks/useAppContext";
+import { User } from "@/types";
+import { postUser } from "@/app/utils/apiCalls";
 import Image from "next/image";
 import React, { useCallback, useState } from "react";
 import xIcon from "../../../../public/x-logo.png";
@@ -12,15 +13,20 @@ type Props = {
   handleClose: (value: boolean) => void;
 };
 
-const SignInForm: React.FC<Props> = ({ handleClose }) => {
+const UserForm: React.FC<Props> = ({ handleClose }) => {
   const { setIsLoading } = useAppContext();
-  const [user, setUser] = useState({ userName: "", passwordHash: "" });
+  const [user, setUser] = useState<User>({
+    email: "",
+    userName: "",
+    birthDate: "",
+    passwordHash: "",
+  });
 
   const onSubmit = useCallback(async () => {
-    setIsLoading(true);
-    await signIn(user);
-    setIsLoading(false);
     handleClose(false);
+    setIsLoading(true);
+    await postUser(user);
+    setIsLoading(false);
   }, [handleClose, setIsLoading, user]);
 
   return (
@@ -28,16 +34,23 @@ const SignInForm: React.FC<Props> = ({ handleClose }) => {
       <form>
         <div className="flex flex-col items-center gap-3 text-black">
           <Image height={30} width={30} alt="x image" src={xIcon} />
-          <h3>Sign in to X</h3>
+          <h3>Create your account</h3>
         </div>
         <div className="flex flex-col gap-2 px-4 py-4">
           <Input
             label="Name"
             form={true}
             value={user.userName}
-            onChange={(values) =>
-              setUser((prev) => ({ ...prev, userName: values }))
+            onChange={(value) =>
+              setUser((prev) => ({ ...prev, userName: value }))
             }
+          />
+          <Input
+            label="Email"
+            type="email"
+            form={true}
+            value={user.email}
+            onChange={(value) => setUser((prev) => ({ ...prev, email: value }))}
           />
           <Input
             label="Password"
@@ -48,11 +61,20 @@ const SignInForm: React.FC<Props> = ({ handleClose }) => {
               setUser((prev) => ({ ...prev, passwordHash: value }))
             }
           />
+          <Input
+            label="Date of birth"
+            type="date"
+            form={true}
+            value={user.birthDate}
+            onChange={(value) =>
+              setUser((prev) => ({ ...prev, birthDate: value }))
+            }
+          />
         </div>
         <Button
           className="py-2 px-4 m-4 "
           backgroundColor="secondary"
-          label="Sign in"
+          label="Submit"
           onClick={onSubmit}
           applyMinWidth
         />
@@ -61,4 +83,4 @@ const SignInForm: React.FC<Props> = ({ handleClose }) => {
   );
 };
 
-export default SignInForm;
+export default UserForm;

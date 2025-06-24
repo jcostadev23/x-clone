@@ -1,4 +1,4 @@
-import { Tweet } from "@/app/types";
+import { Tweet } from "@/types";
 import Comment from "../PostComment";
 import RepostIcon from "../Icons/RepostIcon";
 import LikeUnlikeButton from "../TweetButtons/LikeUnlikeButton";

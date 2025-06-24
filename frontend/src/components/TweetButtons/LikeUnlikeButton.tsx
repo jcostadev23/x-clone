@@ -1,10 +1,10 @@
 "use client";
 
-import { ActionsType } from "@/app/helpers/reducer";
-import { useAppContext } from "@/app/hooks/useAppContext";
-import { useReducerContext } from "@/app/hooks/useReducer";
-import { Tweet } from "@/app/types";
-import { getAllTweets, tweetLikeUnlike } from "@/app/utils/apiCalls";
+import { ActionsType } from "@/helpers/reducer";
+import { useAppContext } from "@/hooks/useAppContext";
+import { useReducerContext } from "@/hooks/useReducer";
+import { Tweet } from "@/types";
+import { getAllTweets, tweetLikeUnlike } from "@/utils/apiCalls";
 import { clsx } from "clsx";
 import React from "react";
 import ButtonIcon from "../ButtonIcon";

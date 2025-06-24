@@ -1,9 +1,9 @@
 "use client";
 
-import { ActionsType } from "@/app/helpers/reducer";
-import { useAppContext } from "@/app/hooks/useAppContext";
-import { useReducerContext } from "@/app/hooks/useReducer";
-import { getAllTweets, postTweet } from "@/app/utils/apiCalls";
+import { ActionsType } from "@/helpers/reducer";
+import { useAppContext } from "@/hooks/useAppContext";
+import { useReducerContext } from "@/hooks/useReducer";
+import { getAllTweets, postTweet } from "@/utils/apiCalls";
 import { useState } from "react";
 import Button from "../Button";
 import Input from "../Form/Input";

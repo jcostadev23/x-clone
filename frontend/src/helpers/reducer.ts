@@ -1,4 +1,4 @@
-import { State, Tweet } from "../types";
+import { State, Tweet } from "@/types";
 
 export enum ActionsType {
   SET_TWEETS = "SET_TWEETS",

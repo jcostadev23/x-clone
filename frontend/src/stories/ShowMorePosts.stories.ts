@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import ShowMorePosts from "../app/components/ShowMorePosts";
+import ShowMorePosts from "../components/ShowMorePosts";
 
 const meta = {
   title: "Example/ShowMorePosts",

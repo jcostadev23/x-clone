@@ -1,12 +1,12 @@
 "use client";
 
-import { ActionsType } from "@/app/helpers/reducer";
-import { useAppContext } from "@/app/hooks/useAppContext";
-import { useReducerContext } from "@/app/hooks/useReducer";
-import { getAllTweets } from "@/app/utils/apiCalls";
+import { ActionsType } from "@/helpers/reducer";
+import { useAppContext } from "@/hooks/useAppContext";
+import { useReducerContext } from "@/hooks/useReducer";
+import { getAllTweets } from "@/utils/apiCalls";
 import { useEffect } from "react";
-import Loading from "../Loader";
 import TweetCard from "./TweetCard";
+import Loading from "../Loader";
 
 const Tweets = () => {
   const { isLoading, setIsLoading } = useAppContext();
