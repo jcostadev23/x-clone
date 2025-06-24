@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import xIcon from "../../public/x-logo.png";
 import Button from "../components/Button";
@@ -25,7 +26,9 @@ const UserPage = () => {
           isOpen && "opacity-70 bg-gray-50"
         )}
       >
-        <Image width={300} height={300} alt="x image" src={xIcon} />
+        <Link href="/">
+          <Image width={300} height={300} alt="x image" src={xIcon} />
+        </Link>
         <div className="flex items-center">
           <div className="flex flex-col gap-2">
             <Button onClick={() => setIsOpen(true)} label="Create account" />
