@@ -1,7 +1,8 @@
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AppProvider } from "@/hooks/useAppContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppProvider } from "@/hooks/useAppContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AppProvider>{children}</AppProvider>
+        <ErrorBoundary fallback={<h1>Im inside the errorBoundary</h1>}>
+          <AppProvider>{children}</AppProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
