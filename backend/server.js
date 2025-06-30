@@ -3,7 +3,12 @@ const { cors, path, connectDataBase, express, port } = require("./dependecies");
 connectDataBase();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());

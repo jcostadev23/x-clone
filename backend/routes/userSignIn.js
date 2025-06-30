@@ -4,32 +4,40 @@ const User = require("../models/users");
 
 router.post("/", async (req, res) => {
   try {
+    const { userName, passwordHash } = req.body;
+    const token = req.body.passwordHash;
+
     const users = await User.find();
-    const user = req.body.user;
+    const isUserfond = users.find((u) => u.userName === userName);
 
-    const findUser = users.find((u) => u.userName === user.userName);
-
-    if (!findUser) {
+    if (!isUserfond) {
       return res.status(400).json({
         success: false,
-        error: `${user.userName} You are not register`,
+        error: `${userName} You are not register`,
       });
     }
 
-    const userValid = users.find((u) => u.passwordHash === user.passwordHash);
+    const isUserValid = users.find((u) => u.passwordHash === passwordHash);
 
-    if (!userValid) {
+    if (!isUserValid) {
       return res.status(400).json({
         success: false,
-        error: `${user.userName} The password you introduce are not valid`,
+        error: `${userName} The password you introduce are not valid`,
       });
     }
 
-    res.status(200).json({ sucess: true, data: userValid });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 2, // 2 days,
+    });
+
+    res.send({ success: true });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: "Something went wrong on Sign in",
+      error: `Something went wrong on Sign in: ${error}`,
     });
   }
 });

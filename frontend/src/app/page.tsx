@@ -7,7 +7,7 @@ import { ReducerProvider } from "@/hooks/useReducer";
 
 export default async function Home() {
   return (
-    <div className="flex flex-col gap-6 p-5 md:flex-row md:gap-8 bg-gray-50 dark:bg-gray-800">
+    <div className="flex flex-col gap-6 p-5 md:flex-row md:gap-8">
       <ReducerProvider>
         <Menu />
         <div className="flex-[4] container mx-auto border border-gray-300">

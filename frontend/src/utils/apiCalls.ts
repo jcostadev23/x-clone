@@ -1,11 +1,17 @@
 import { Comment, Tweet, User } from "@/types";
 
-const url = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/`;
+const url = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}`;
 
 export const getAllTweets = async () => {
   let tweets: { data: Array<Tweet> } = { data: [] };
   try {
-    const resp = await fetch(`${url}tweets/`);
+    const resp = await fetch(`${url}/tweets`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     tweets = await resp.json();
   } catch (error) {
     console.warn("Error on fetch tweets", error);
@@ -14,8 +20,9 @@ export const getAllTweets = async () => {
 };
 
 export const postTweet = async (tweet: Tweet) => {
-  const response = await fetch(`${url}tweets/`, {
+  const response = await fetch(`${url}/tweets`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -30,8 +37,9 @@ export const postTweet = async (tweet: Tweet) => {
 
 export const tweetLikeUnlike = async (tweetId: number, userId: number) => {
   try {
-    const response = await fetch(`${url}tweets/${tweetId}`, {
+    const response = await fetch(`${url}/tweets/${tweetId}`, {
       method: "PUT",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -49,8 +57,9 @@ export const tweetLikeUnlike = async (tweetId: number, userId: number) => {
 
 export const addComment = async (tweetId: number, comment: Comment) => {
   try {
-    const response = await fetch(`${url}tweets/${tweetId}/comment`, {
+    const response = await fetch(`${url}/tweets/${tweetId}/comment`, {
       method: "PUT",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -69,7 +78,11 @@ export const addComment = async (tweetId: number, comment: Comment) => {
 export const getAllUsers = async () => {
   let users: { data: Array<Record<string, string>> } = { data: [] };
   try {
-    const resp = await fetch(`${url}users/`);
+    const resp = await fetch(`${url}/users/`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
     users = await resp.json();
   } catch (error) {
     console.warn("Error on fetch tweets", error);
@@ -78,8 +91,9 @@ export const getAllUsers = async () => {
 };
 
 export const postUser = async (user: User) => {
-  const response = await fetch(`${url}users/`, {
+  const response = await fetch(`${url}/users/`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -96,21 +110,25 @@ export const signIn = async (user: {
   userName: string;
   passwordHash: string;
 }) => {
-  let userData: { data: Record<string, string> } = { data: {} };
   try {
-    const resp = await fetch(`${url}signin`, {
+    const resp = await fetch(`${url}/signin`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        user,
+        ...user,
       }),
     });
+    const data = await resp.json();
 
-    userData = await resp.json();
+    if (!data) {
+      return false;
+    }
+
+    return data;
   } catch (error) {
     console.error("Error on Sign in", error);
   }
-  return userData.data;
 };
