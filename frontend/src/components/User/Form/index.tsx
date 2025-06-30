@@ -1,11 +1,11 @@
 "use cliente";
 
 import { useAppContext } from "@/hooks/useAppContext";
+import xIcon from "@/public/x-logo.png";
 import { User } from "@/types";
-import { postUser } from "@/app/utils/apiCalls";
+import { postUser } from "@/utils/apiCalls";
 import Image from "next/image";
 import React, { useCallback, useState } from "react";
-import xIcon from "../../../../public/x-logo.png";
 import Button from "../../Button";
 import Input from "../../Form/Input";
 

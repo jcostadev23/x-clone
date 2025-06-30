@@ -1,10 +1,11 @@
 "use cliente";
 
 import { useAppContext } from "@/hooks/useAppContext";
+import xIcon from "@/public/x-logo.png";
 import { signIn } from "@/utils/apiCalls";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import xIcon from "../../../../public/x-logo.png";
 import Button from "../../Button";
 import Input from "../../Form/Input";
 
@@ -18,9 +19,13 @@ const SignInForm: React.FC<Props> = ({ handleClose }) => {
 
   const onSubmit = useCallback(async () => {
     setIsLoading(true);
-    await signIn(user);
+    const response = await signIn(user);
     setIsLoading(false);
     handleClose(false);
+
+    if (response) {
+      redirect("/");
+    }
   }, [handleClose, setIsLoading, user]);
 
   return (
