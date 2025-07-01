@@ -38,6 +38,7 @@ const TextArea: React.FC<Props> = ({
     <div className="flex flex-col gap-1 w-full p-2">
       {label && <label className="text-gray-700">{label}</label>}
       <textarea
+        data-cy="new-comment"
         rows={rows}
         value={value}
         onChange={handleEvent}
