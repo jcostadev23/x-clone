@@ -12,7 +12,7 @@ const TweetCardHeader: React.FC<Props> = ({ tweet }) => {
   const { userName, date, description } = tweet;
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-3" data-cy="TweetCardHeader">
       <div className="w-10 h-10 rounded-full overflow-hidden">
         <Image
           src={xIcon}

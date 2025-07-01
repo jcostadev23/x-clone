@@ -12,7 +12,10 @@ type Props = {
 
 const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
   return (
-    <div className="flex gap-2 m-3 justify-between max-w-full">
+    <div
+      data-cy="TweetCardFooter"
+      className="flex gap-2 m-3 justify-between max-w-full"
+    >
       <Comment tweet={tweet} />
       <div className="flex gap-1.5 items-center text-gray-600 hover:text-emerald-500">
         <RepostIcon />
