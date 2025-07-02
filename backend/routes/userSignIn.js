@@ -7,22 +7,21 @@ router.post("/", async (req, res) => {
     const { userName, passwordHash } = req.body;
     const token = req.body.passwordHash;
 
-    const users = await User.find();
-    const isUserfond = users.find((u) => u.userName === userName);
+    const user = await User.findOne({ userName });
 
-    if (!isUserfond) {
+    if (!user) {
       return res.status(400).json({
         success: false,
-        error: `${userName} You are not register`,
+        error: "Credenciais inválidas",
       });
     }
 
-    const isUserValid = users.find((u) => u.passwordHash === passwordHash);
+    const isUserValid = user.passwordHash === passwordHash;
 
     if (!isUserValid) {
       return res.status(400).json({
         success: false,
-        error: `${userName} The password you introduce are not valid`,
+        error: "Credenciais inválidas",
       });
     }
 
