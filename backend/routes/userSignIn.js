@@ -26,6 +26,7 @@ router.post("/", async (req, res) => {
     }
 
     res.cookie("token", token, {
+      user: user?._id,
       httpOnly: true,
       secure: false,
       sameSite: "lax",
