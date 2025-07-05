@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 2,
+      maxAge: 60 * 60 * 24 * 2 * 1000,
     });
 
     res.send({ success: true });
