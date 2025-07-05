@@ -103,7 +103,7 @@ export const postUser = async (user: User) => {
   });
 
   const data = await response.json();
-  return data.data;
+  return data;
 };
 
 export const signIn = async (user: {

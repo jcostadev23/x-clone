@@ -8,6 +8,7 @@ import Image from "next/image";
 import React, { useCallback, useState } from "react";
 import Button from "../../Button";
 import Input from "../../Form/Input";
+import { redirect } from "next/navigation";
 
 type Props = {
   handleClose: (value: boolean) => void;
@@ -25,8 +26,12 @@ const UserForm: React.FC<Props> = ({ handleClose }) => {
   const onSubmit = useCallback(async () => {
     handleClose(false);
     setIsLoading(true);
-    await postUser(user);
+    const response = await postUser(user);
     setIsLoading(false);
+
+    if (response) {
+      redirect("/");
+    }
   }, [handleClose, setIsLoading, user]);
 
   return (
