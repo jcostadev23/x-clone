@@ -20,7 +20,7 @@ export const getAllTweets = async () => {
   return tweets.data;
 };
 
-export const postTweet = async (tweet: Tweet) => {
+export const postTweet = async (tweet: Partial<Tweet>) => {
   const response = await fetch(`${url}/tweets`, {
     method: "POST",
     credentials: "include",

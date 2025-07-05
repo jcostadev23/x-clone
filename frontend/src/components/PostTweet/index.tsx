@@ -22,8 +22,6 @@ const PostTweet = () => {
 
     setIsLoading(true);
     const response = await postTweet({
-      userId: 21,
-      userName: "Costa",
       description: tweet,
       comments: [],
       likes: [],

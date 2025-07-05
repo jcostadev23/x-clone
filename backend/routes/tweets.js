@@ -1,11 +1,12 @@
 const { express } = require("../dependecies");
 const router = express.Router();
 const Tweet = require("../models/tweet");
+const jwt = require("jsonwebtoken");
 
 router.get("/", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 12;
-    const tweets = await Tweet.find().limit(limit);
+    const tweets = await Tweet.find().sort({ date: -1 }).limit(limit);
     res.send({ success: true, data: tweets });
   } catch (error) {
     res.status(500).json({ success: false, error: "Something went wrong" });
@@ -13,8 +14,26 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, error: "Token não fornecido" });
+  }
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  if (!decoded) {
+    return res
+      .status(403)
+      .json({ success: false, error: "Token inválido ou expirado" });
+  }
+
   try {
-    const tweet = req.body.tweet;
+    const tweet = {
+      ...req.body.tweet,
+      userId: decoded.userId,
+      userName: decoded.userName,
+    };
 
     if (!tweet) {
       return res

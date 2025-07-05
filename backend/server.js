@@ -1,3 +1,5 @@
+require("dotenv").config();
+const cookieParser = require("cookie-parser");
 const { cors, path, connectDataBase, express, port } = require("./dependecies");
 
 connectDataBase();
@@ -10,6 +12,7 @@ app.use(
   })
 );
 
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

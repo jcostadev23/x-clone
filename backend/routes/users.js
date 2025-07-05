@@ -1,6 +1,7 @@
 const { express } = require("../dependecies");
 const router = express.Router();
 const User = require("../models/users");
+const jwt = require("jsonwebtoken");
 
 router.get("/", async (req, res) => {
   try {
@@ -27,7 +28,11 @@ router.post("/", async (req, res) => {
     const newUser = new User(user);
     await newUser.save();
 
-    const token = newUser._id.toString();
+    const token = jwt.sign(
+      { userId: newUser._id.toString(), userName: newUser.userName },
+      process.env.JWT_SECRET,
+      { expiresIn: "2d" }
+    );
 
     res.clearCookie("token");
     res.cookie("token", token, {
