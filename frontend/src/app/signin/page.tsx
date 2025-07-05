@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useAppContext } from "../../hooks/useAppContext";
 import xIcon from "../../public/x-logo.png";
 
-const UserPage = () => {
+const SignIn = () => {
   const { isLoading } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
   const [isSignIn, setIsSignIn] = useState(false);
@@ -50,4 +50,4 @@ const UserPage = () => {
   );
 };
 
-export default UserPage;
+export default SignIn;

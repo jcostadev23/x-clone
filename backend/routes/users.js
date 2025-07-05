@@ -27,7 +27,17 @@ router.post("/", async (req, res) => {
     const newUser = new User(user);
     await newUser.save();
 
-    res.status(200).json({ sucess: true, data: newUser });
+    const token = newUser._id.toString();
+
+    res.clearCookie("token");
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 2 * 1000,
+    });
+
+    res.status(200).json({ sucess: true });
   } catch (error) {
     res.status(500).json({
       success: false,

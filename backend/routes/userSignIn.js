@@ -5,7 +5,6 @@ const User = require("../models/users");
 router.post("/", async (req, res) => {
   try {
     const { userName, passwordHash } = req.body;
-    const token = req.body.passwordHash;
 
     const user = await User.findOne({ userName });
 
@@ -25,11 +24,12 @@ router.post("/", async (req, res) => {
       });
     }
 
+    const token = user._id.toString();
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 2, // 2 days,
+      maxAge: 60 * 60 * 24 * 2 * 1000,
     });
 
     res.send({ success: true });

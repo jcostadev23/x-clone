@@ -4,7 +4,8 @@ const Tweet = require("../models/tweet");
 
 router.get("/", async (req, res) => {
   try {
-    const tweets = await Tweet.find();
+    const limit = parseInt(req.query.limit) || 12;
+    const tweets = await Tweet.find().limit(limit);
     res.send({ success: true, data: tweets });
   } catch (error) {
     res.status(500).json({ success: false, error: "Something went wrong" });

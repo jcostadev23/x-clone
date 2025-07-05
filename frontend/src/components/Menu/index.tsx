@@ -6,7 +6,7 @@ const Menu = () => {
     <aside className="flex flex-col justify-between flex-[2]">
       <div>Estou aki</div>
       <Link
-        href="/user"
+        href="/signin"
         className="flex justify-end items-center gap-1  rounded-3xl px-3 py-3"
       >
         <UserIcon />

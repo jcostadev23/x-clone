@@ -18,11 +18,11 @@ app.get("/", (req, res) => {
   res.send({ message: "Welcome to X clone API" });
 });
 
-const xcloneRouter = require("./routes/xclone");
+const tweetsRouter = require("./routes/tweets");
 const usersRouter = require("./routes/users");
 const userSignInRouter = require("./routes/userSignIn");
 
-app.use("/tweets", xcloneRouter);
+app.use("/tweets", tweetsRouter);
 app.use("/users", usersRouter);
 app.use("/signin", userSignInRouter);
 
