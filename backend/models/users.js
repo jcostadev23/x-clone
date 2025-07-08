@@ -21,6 +21,7 @@ const usersSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  follow: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 const User = mongoose.model("User", usersSchema);

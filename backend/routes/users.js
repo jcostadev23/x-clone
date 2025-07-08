@@ -70,4 +70,46 @@ router.get("/:userId", async (req, res) => {
       .json({ sucess: false, error: "Something went wrong getting the user" });
   }
 });
+
+router.post("/follow/:userId", async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, error: "Token não fornecido" });
+  }
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  if (!decoded) {
+    return res
+      .status(403)
+      .json({ success: false, error: "Token inválido ou expirado" });
+  }
+
+  try {
+    const followerId = decoded.userId;
+    const { userId: followingId } = req.params;
+
+    if (!followerId || !followingId) {
+      return res.status(400).json({
+        success: false,
+        error: "IDs de utilizador inválidos",
+      });
+    }
+
+    await User.findByIdAndUpdate(followerId, {
+      $addToSet: { follow: followingId },
+    });
+
+    res
+      .status(200)
+      .json({ sucess: true, message: "Now you are following the user" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Something went wrong on follow the user",
+    });
+  }
+});
+
 module.exports = router;
