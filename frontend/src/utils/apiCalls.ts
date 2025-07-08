@@ -133,3 +133,17 @@ export const signIn = async (user: {
     console.error("Error on Sign in", error);
   }
 };
+
+export const getUserById = async (userId: number) => {
+  try {
+    const response = await fetch(`${url}/users/${userId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    const user = await response.json();
+    return user.data;
+  } catch (error) {
+    console.error(`There was an error on geting the user: ${error}`);
+  }
+};

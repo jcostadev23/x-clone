@@ -2,13 +2,14 @@ import Image from "next/image";
 import xIcon from "../../public/x-icon.jpg";
 import { Tweet } from "@/types";
 import React from "react";
+import Link from "next/link";
 
 type Props = {
   tweet: Tweet;
 };
 
 const TweetCardHeader: React.FC<Props> = ({ tweet }) => {
-  const { userName, date, description } = tweet;
+  const { userName, date, description, userId } = tweet;
 
   return (
     <div className="flex gap-3" data-cy="TweetCardHeader">
@@ -23,7 +24,9 @@ const TweetCardHeader: React.FC<Props> = ({ tweet }) => {
       </div>
       <section>
         <div className="flex gap-2">
-          <strong className="text-black text-md">{userName}</strong>
+          <Link href={`/user/${userId}`}>
+            <strong className="text-black text-md">{userName}</strong>
+          </Link>
           <span className="text-sm" title={date}>
             {date}
           </span>
