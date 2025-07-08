@@ -133,3 +133,38 @@ export const signIn = async (user: {
     console.error("Error on Sign in", error);
   }
 };
+
+export const getUserById = async (userId: string) => {
+  try {
+    const response = await fetch(`${url}/users/${userId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    const user = await response.json();
+    return user.data;
+  } catch (error) {
+    console.error(`There was an error on geting the user: ${error}`);
+  }
+};
+
+export const follow = async (userId: string) => {
+  try {
+    const resp = await fetch(`${url}/users/follow/${userId}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await resp.json();
+
+    if (!data) {
+      return false;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error on Follow user", error);
+  }
+};
