@@ -24,12 +24,6 @@ const Button: React.FC<Props> = ({
   className,
   ...props
 }) => {
-  const handleClick: ClickEvent = (event) => {
-    if (onClick) {
-      onClick(event);
-    }
-  };
-
   return (
     <button
       className={clsx(
@@ -39,7 +33,7 @@ const Button: React.FC<Props> = ({
         className
       )}
       type={type}
-      onClick={handleClick}
+      onClick={onClick}
       {...props}
     >
       {label}
