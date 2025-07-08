@@ -1,15 +1,24 @@
 "use client";
+import { useAppContext } from "@/hooks/useAppContext";
+import { follow } from "@/utils/apiCalls";
+import { redirect, useParams } from "next/navigation";
 import { useCallback } from "react";
 import Button from "../Button";
-import { useParams } from "next/navigation";
 
 const FollowUsers = () => {
   const params = useParams();
   const userId = params?.userId as string;
+  const { setIsLoading } = useAppContext();
 
-  const handleClick = useCallback(() => {
-    console.log("id", userId);
-  }, [userId]);
+  const handleClick = useCallback(async () => {
+    setIsLoading(true);
+    const response = await follow(userId);
+    setIsLoading(false);
+
+    if (response) {
+      redirect("/");
+    }
+  }, [setIsLoading, userId]);
 
   return (
     <Button
