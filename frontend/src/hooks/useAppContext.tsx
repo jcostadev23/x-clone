@@ -1,8 +1,16 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState } from "react";
+import { getMe } from "@/utils/apiCalls";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type AppContextType = {
+  user: { userId?: string; userName?: string };
   isLoading: boolean;
   setIsLoading: (param: boolean) => void;
 };
@@ -23,9 +31,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      const resp = await getMe();
+      setIsLoading(false);
+
+      if (!resp) {
+        return false;
+      }
+
+      setUser(resp);
+    })();
+  }, []);
 
   return (
-    <AppContext.Provider value={{ isLoading, setIsLoading }}>
+    <AppContext.Provider value={{ isLoading, setIsLoading, user }}>
       {children}
     </AppContext.Provider>
   );

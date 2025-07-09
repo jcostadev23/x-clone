@@ -51,6 +51,27 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.get("/me", async (req, res) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ success: false, error: "No token" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({
+      success: true,
+      user: {
+        userId: decoded.userId,
+        userName: decoded.userName,
+      },
+    });
+  } catch (error) {
+    res.status(401).json({ success: false, error: "Invalid token" });
+  }
+});
+
 router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
