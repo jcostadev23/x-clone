@@ -1,13 +1,42 @@
 const { express } = require("../dependecies");
 const router = express.Router();
 const Tweet = require("../models/tweet");
+const User = require("../models/users");
 const jwt = require("jsonwebtoken");
 
 router.get("/", async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 12;
-    const tweets = await Tweet.find().sort({ date: -1 }).limit(limit);
-    res.send({ success: true, data: tweets });
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({ sucess: false, error: "Token not found" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const currentUser = await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ sucess: false, error: "User not found" });
+    }
+
+    const following = currentUser.follow;
+    const limit = parseInt(req.query.limit) || 7;
+
+    const followTweets = await Tweet.find({ userId: { $in: following } })
+      .sort({ date: -1 })
+      .limit(5);
+
+    const tweetsIds = followTweets.map((tweet) => tweet._id);
+
+    const tweets = await Tweet.find({ _id: { $nin: tweetsIds } })
+      .sort({ date: -1 })
+      .limit(limit);
+
+    const finalTweets = [...followTweets, ...tweets];
+
+    res.send({ success: true, data: finalTweets });
   } catch (error) {
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
@@ -16,16 +45,14 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const token = req.cookies.token;
   if (!token) {
-    return res
-      .status(401)
-      .json({ success: false, error: "Token não fornecido" });
+    return res.status(401).json({ success: false, error: "Token not found" });
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   if (!decoded) {
     return res
       .status(403)
-      .json({ success: false, error: "Token inválido ou expirado" });
+      .json({ success: false, error: "Token invalid or expired" });
   }
 
   try {
