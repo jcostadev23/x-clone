@@ -4,13 +4,13 @@ export type Comment = {
 };
 
 export type Tweet = {
-  _id?: number;
-  userId: number;
+  _id?: string;
+  userId: string;
   userName: string;
   date?: string;
   description: string;
   comments: Array<Comment>;
-  likes: Array<number>;
+  likes: Array<string>;
 };
 
 export type State = {
@@ -18,7 +18,7 @@ export type State = {
 };
 
 export type User = {
-  _id?: number;
+  _id?: string;
   userName: string;
   email: string;
   birthDate: string;

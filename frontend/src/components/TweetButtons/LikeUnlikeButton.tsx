@@ -15,18 +15,17 @@ interface Props {
 }
 
 const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
-  const userId = 38;
-  const { setIsLoading } = useAppContext();
+  const { setIsLoading, user } = useAppContext();
   const { dispatch } = useReducerContext();
-  const liked = tweet.likes.includes(userId);
+  const liked = tweet.likes.includes(user?.userId as string);
 
-  const handleClick = async (id?: number) => {
-    if (!id) {
+  const handleClick = async (id?: string) => {
+    if (!id || !user?.userId) {
       return false;
     }
 
     setIsLoading(true);
-    const resp = await tweetLikeUnlike(id, userId);
+    const resp = await tweetLikeUnlike(id, user.userId);
     setIsLoading(false);
 
     if (!resp) {
@@ -46,6 +45,7 @@ const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
       payload: tweets,
     });
   };
+  console.log("likes", user.userName);
 
   return (
     <ButtonIcon
