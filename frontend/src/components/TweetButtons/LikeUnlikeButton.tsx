@@ -45,7 +45,6 @@ const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
       payload: tweets,
     });
   };
-  console.log("likes", user.userName);
 
   return (
     <ButtonIcon
