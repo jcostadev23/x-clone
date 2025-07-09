@@ -36,7 +36,7 @@ export const postTweet = async (tweet: Partial<Tweet>) => {
   return data.data;
 };
 
-export const tweetLikeUnlike = async (tweetId: number, userId: number) => {
+export const tweetLikeUnlike = async (tweetId: string, userId: string) => {
   try {
     const response = await fetch(`${url}/tweets/${tweetId}`, {
       method: "PUT",
@@ -56,7 +56,7 @@ export const tweetLikeUnlike = async (tweetId: number, userId: number) => {
   }
 };
 
-export const addComment = async (tweetId: number, comment: Comment) => {
+export const addComment = async (tweetId: string, comment: Comment) => {
   try {
     const response = await fetch(`${url}/tweets/${tweetId}/comment`, {
       method: "PUT",
@@ -166,5 +166,21 @@ export const follow = async (userId: string) => {
     return data;
   } catch (error) {
     console.error("Error on Follow user", error);
+  }
+};
+
+export const getMe = async () => {
+  try {
+    const resp = await fetch(`${url}/users/me`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const me = await resp.json();
+
+    return me.user;
+  } catch (error) {
+    console.log(`There was an error on getting my details: ${error}`);
   }
 };
