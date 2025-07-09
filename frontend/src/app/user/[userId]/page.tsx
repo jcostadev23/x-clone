@@ -6,13 +6,13 @@ type Props = {
 };
 
 const UserPage: React.FC<Props> = async ({ params }) => {
-  const { userId } = params;
+  const { userId } = await params;
   const user = await getUserById(userId);
 
   return (
     <div className="flex gap-2 justify-center align-middle text-3xl">
       {user.userName}
-      <FollowUsers />
+      <FollowUsers userId={userId} />
     </div>
   );
 };
