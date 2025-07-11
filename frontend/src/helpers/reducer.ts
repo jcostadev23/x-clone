@@ -10,7 +10,7 @@ const setTweets = (state: State, payload: Array<Tweet>) => ({
   tweets: payload,
 });
 
-const setLike = (state: State, payload: { id: number; userId: number }) => ({
+const setLike = (state: State, payload: { id: string; userId: string }) => ({
   ...state,
   tweets: state.tweets.map((tweet) =>
     tweet._id === payload.id

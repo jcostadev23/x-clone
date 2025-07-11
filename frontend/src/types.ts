@@ -1,5 +1,5 @@
 export type Comment = {
-  id: number;
+  id: string;
   comment: string;
 };
 
@@ -23,4 +23,8 @@ export type User = {
   email: string;
   birthDate: string;
   passwordHash: string;
+};
+
+export type ListParams = {
+  token?: string;
 };
