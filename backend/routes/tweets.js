@@ -3,6 +3,7 @@ const router = express.Router();
 const Tweet = require("../models/tweet");
 const User = require("../models/users");
 const jwt = require("jsonwebtoken");
+const { formatDate } = require("../utils/dateFormater");
 
 router.get("/", async (req, res) => {
   try {
@@ -34,7 +35,13 @@ router.get("/", async (req, res) => {
       .sort({ date: -1 })
       .limit(limit);
 
-    const finalTweets = [...followTweets, ...tweets];
+    const tweetsDeepCopy = JSON.parse(
+      JSON.stringify([...followTweets, ...tweets])
+    );
+    const finalTweets = tweetsDeepCopy.map((tweet) => ({
+      ...tweet,
+      date: formatDate(tweet.date),
+    }));
 
     res.send({ success: true, data: finalTweets });
   } catch (error) {
