@@ -1,3 +1,4 @@
+const authenticateToken = require("../middleware/auth");
 const { express } = require("../dependecies");
 const router = express.Router();
 const User = require("../models/users");
@@ -51,20 +52,13 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/me", async (req, res) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ success: false, error: "No token" });
-  }
-
+router.get("/me", authenticateToken, async (req, res) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.status(200).json({
       success: true,
       user: {
-        userId: decoded.userId,
-        userName: decoded.userName,
+        userId: req.user.userId,
+        userName: req.user.userName,
       },
     });
   } catch (error) {
@@ -92,23 +86,9 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-router.post("/follow/:userId", async (req, res) => {
-  const token = req.cookies.token;
-  if (!token) {
-    return res
-      .status(401)
-      .json({ success: false, error: "Token não fornecido" });
-  }
-
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  if (!decoded) {
-    return res
-      .status(403)
-      .json({ success: false, error: "Token inválido ou expirado" });
-  }
-
+router.post("/follow/:userId", authenticateToken, async (req, res) => {
   try {
-    const followerId = decoded.userId;
+    const followerId = req.user.userId;
     const { userId: followingId } = req.params;
 
     if (!followerId || !followingId) {
