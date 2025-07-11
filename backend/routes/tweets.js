@@ -2,20 +2,12 @@ const { express } = require("../dependecies");
 const router = express.Router();
 const Tweet = require("../models/tweet");
 const User = require("../models/users");
-const jwt = require("jsonwebtoken");
 const { formatDate } = require("../utils/dateFormater");
+const authenticateToken = require("../middleware/auth");
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
-    const token = req.cookies.token;
-
-    if (!token) {
-      return res.status(401).json({ sucess: false, error: "Token not found" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
-
+    const userId = req.user.userId;
     const currentUser = await User.findById(userId);
 
     if (!currentUser) {
@@ -30,7 +22,6 @@ router.get("/", async (req, res) => {
       .limit(5);
 
     const tweetsIds = followTweets.map((tweet) => tweet._id);
-
     const tweets = await Tweet.find({ _id: { $nin: tweetsIds } })
       .sort({ date: -1 })
       .limit(limit);
@@ -49,24 +40,12 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
-  const token = req.cookies.token;
-  if (!token) {
-    return res.status(401).json({ success: false, error: "Token not found" });
-  }
-
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  if (!decoded) {
-    return res
-      .status(403)
-      .json({ success: false, error: "Token invalid or expired" });
-  }
-
+router.post("/", authenticateToken, async (req, res) => {
   try {
     const tweet = {
       ...req.body.tweet,
-      userId: decoded.userId,
-      userName: decoded.userName,
+      userId: req.user.userId,
+      userName: req.user.userName,
     };
 
     if (!tweet) {
