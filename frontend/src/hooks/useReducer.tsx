@@ -6,7 +6,7 @@ import { actions, ActionsType } from "@/helpers/reducer";
 
 type Action =
   | { type: ActionsType.SET_TWEETS; payload: Array<Tweet> }
-  | { type: ActionsType.LIKE_TWEET; payload: { id: number; userId: number } };
+  | { type: ActionsType.LIKE_TWEET; payload: { id: string; userId: string } };
 
 type Dispatch = (action: Action) => void;
 
@@ -38,11 +38,12 @@ const reducer = (state: State, action: Action) => {
   }
 };
 
-export const ReducerProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const ReducerProvider: React.FC<{
+  children: ReactNode;
+  tweets: Array<Tweet>;
+}> = ({ children, tweets }) => {
   const [state, dispatch] = useReducer(reducer, {
-    tweets: [],
+    tweets,
   });
 
   return (

@@ -1,14 +1,15 @@
-import { Comment, Tweet, User } from "@/types";
+import { Comment, ListParams, Tweet, User } from "@/types";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}`;
 
-export const getAllTweets = async () => {
+export const getAllTweets = async (params?: ListParams) => {
   let tweets: { data: Array<Tweet> } = { data: [] };
   try {
     const resp = await fetch(`${url}/tweets?limit=6`, {
       method: "GET",
       credentials: "include",
       headers: {
+        Cookie: `token=${params?.token}`,
         "Content-Type": "application/json",
       },
     });
