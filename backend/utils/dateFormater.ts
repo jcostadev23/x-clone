@@ -1,4 +1,4 @@
-export const formatDate = (currentDate) => {
+export const formatDate = (currentDate: string) => {
   if (!currentDate) {
     return "-";
   }

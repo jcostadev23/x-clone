@@ -1,9 +1,10 @@
-const { express } = require("../dependecies");
-const router = express.Router();
-const User = require("../models/users");
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import { express } from "../dependecies";
+import User from "../models/users";
 
-router.post("/", async (req, res) => {
+const router = express.Router();
+
+router.post("/", async (req: any, res: any) => {
   try {
     const { userName, passwordHash } = req.body;
 
@@ -27,7 +28,7 @@ router.post("/", async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id.toString(), userName: userName },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET as string,
       { expiresIn: "2d" }
     );
 
@@ -47,4 +48,4 @@ router.post("/", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
