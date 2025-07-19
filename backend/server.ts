@@ -1,6 +1,11 @@
-require("dotenv").config();
-const cookieParser = require("cookie-parser");
-const { cors, path, connectDataBase, express, port } = require("./dependecies");
+import dotenv from "dotenv";
+dotenv.config();
+
+import cookieParser from "cookie-parser";
+import { connectDataBase, cors, express, path, port } from "./dependecies";
+import tweetsRouter from "./routes/tweets";
+import usersRouter from "./routes/users";
+import userSignInRouter from "./routes/userSignIn";
 
 connectDataBase();
 
@@ -20,10 +25,6 @@ app.use(express.urlencoded({ extended: false }));
 app.get("/", (req, res) => {
   res.send({ message: "Welcome to X clone API" });
 });
-
-const tweetsRouter = require("./routes/tweets");
-const usersRouter = require("./routes/users");
-const userSignInRouter = require("./routes/userSignIn");
 
 app.use("/tweets", tweetsRouter);
 app.use("/users", usersRouter);

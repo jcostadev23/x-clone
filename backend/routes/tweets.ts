@@ -1,11 +1,12 @@
-const { express } = require("../dependecies");
-const router = express.Router();
-const Tweet = require("../models/tweet");
-const User = require("../models/users");
-const { formatDate } = require("../utils/dateFormater");
-const authenticateToken = require("../middleware/auth");
+import { express } from "../dependecies";
+import authenticateToken, { AuthRequest } from "../middleware/auth";
+import Tweet from "../models/tweet";
+import User from "../models/users";
+import { formatDate } from "../utils/dateFormater";
 
-router.get("/", authenticateToken, async (req, res) => {
+const router = express.Router();
+
+router.get("/", authenticateToken, async (req: AuthRequest, res: any) => {
   try {
     const userId = req.user.userId;
     const currentUser = await User.findById(userId);
@@ -15,7 +16,7 @@ router.get("/", authenticateToken, async (req, res) => {
     }
 
     const following = currentUser.follow;
-    const limit = parseInt(req.query.limit) || 7;
+    const limit = parseInt(req.query.limit as string) || 7;
 
     const followTweets = await Tweet.find({ userId: { $in: following } })
       .sort({ date: -1 })
@@ -29,7 +30,7 @@ router.get("/", authenticateToken, async (req, res) => {
     const tweetsDeepCopy = JSON.parse(
       JSON.stringify([...followTweets, ...tweets])
     );
-    const finalTweets = tweetsDeepCopy.map((tweet) => ({
+    const finalTweets = tweetsDeepCopy.map((tweet: any) => ({
       ...tweet,
       date: formatDate(tweet.date),
     }));
@@ -40,7 +41,7 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", authenticateToken, async (req: any, res: any) => {
   try {
     const tweet = {
       ...req.body.tweet,
@@ -63,7 +64,7 @@ router.post("/", authenticateToken, async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req: any, res: any) => {
   try {
     const { userId } = req.body;
     const tweetId = req.params.id;
@@ -88,7 +89,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id/comment", async (req, res) => {
+router.put("/:id/comment", async (req: any, res: any) => {
   try {
     const { comment } = req.body;
     const tweetId = req.params.id;
@@ -107,4 +108,4 @@ router.put("/:id/comment", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

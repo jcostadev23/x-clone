@@ -1,10 +1,11 @@
-const authenticateToken = require("../middleware/auth");
-const { express } = require("../dependecies");
-const router = express.Router();
-const User = require("../models/users");
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import { express } from "../dependecies";
+import authenticateToken from "../middleware/auth";
+import User from "../models/users";
 
-router.get("/", async (req, res) => {
+const router = express.Router();
+
+router.get("/", async (req: any, res: any) => {
   try {
     const users = await User.find();
     res.send({ success: true, data: users });
@@ -16,7 +17,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", async (req: any, res: any) => {
   try {
     const user = req.body.user;
 
@@ -31,7 +32,7 @@ router.post("/", async (req, res) => {
 
     const token = jwt.sign(
       { userId: newUser._id.toString(), userName: newUser.userName },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET as string,
       { expiresIn: "2d" }
     );
 
@@ -52,7 +53,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/me", authenticateToken, async (req, res) => {
+router.get("/me", authenticateToken, async (req: any, res: any) => {
   try {
     res.status(200).json({
       success: true,
@@ -66,7 +67,7 @@ router.get("/me", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", async (req: any, res: any) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId);
@@ -86,31 +87,35 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-router.post("/follow/:userId", authenticateToken, async (req, res) => {
-  try {
-    const followerId = req.user.userId;
-    const { userId: followingId } = req.params;
+router.post(
+  "/follow/:userId",
+  authenticateToken,
+  async (req: any, res: any) => {
+    try {
+      const followerId = req.user.userId;
+      const { userId: followingId } = req.params;
 
-    if (!followerId || !followingId) {
-      return res.status(400).json({
+      if (!followerId || !followingId) {
+        return res.status(400).json({
+          success: false,
+          error: "IDs de utilizador inválidos",
+        });
+      }
+
+      await User.findByIdAndUpdate(followerId, {
+        $addToSet: { follow: followingId },
+      });
+
+      res
+        .status(200)
+        .json({ sucess: true, message: "Now you are following the user" });
+    } catch (error) {
+      res.status(500).json({
         success: false,
-        error: "IDs de utilizador inválidos",
+        error: "Something went wrong on follow the user",
       });
     }
-
-    await User.findByIdAndUpdate(followerId, {
-      $addToSet: { follow: followingId },
-    });
-
-    res
-      .status(200)
-      .json({ sucess: true, message: "Now you are following the user" });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Something went wrong on follow the user",
-    });
   }
-});
+);
 
-module.exports = router;
+export default router;
