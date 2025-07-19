@@ -1,20 +1,20 @@
-import FollowUsers from "@/components/FollowUsers";
 import { getUserById } from "@/utils/apiCalls";
+import UserPage from "./UserPage";
 
 type Props = {
   params: { userId: string };
 };
 
-const UserPage: React.FC<Props> = async ({ params }) => {
+const Page: React.FC<Props> = async ({ params }) => {
   const { userId } = await params;
   const user = await getUserById(userId);
 
   return (
     <div className="flex gap-2 justify-center align-middle text-3xl">
       {user.userName}
-      <FollowUsers userId={userId} />
+      <UserPage userId={userId} />
     </div>
   );
 };
 
-export default UserPage;
+export default Page;
