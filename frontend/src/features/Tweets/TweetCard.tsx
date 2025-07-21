@@ -1,23 +1,19 @@
 "use client";
 
-import { fetchAndSetTweets } from "@/helpers";
+import { Tweet } from "@/types";
+import TweetCardFooter from "./TweetCardFooter";
+import TweetCardHeader from "./components/TweetCardHeader";
 import { useAppContext } from "@/hooks/useAppContext";
 import { useReducerContext } from "@/hooks/useReducer";
-import { Tweet } from "@/types";
+import { useCallback, useState } from "react";
 import { addComment, tweetLikeUnlike } from "@/utils/apiCalls";
-import { useState } from "react";
-import BookMarkIcon from "../Icons/BookMarkIcon";
-import RepostIcon from "../Icons/RepostIcon";
-import ShareIcon from "../Icons/ShareIcon";
-import ViewIcon from "../Icons/ViewIcon";
-import Comment from "../PostComment";
-import LikeUnlikeButton from "../TweetButtons/LikeUnlikeButton";
+import { fetchAndSetTweets } from "@/helpers";
 
 type Props = {
   tweet: Tweet;
 };
 
-const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
+const TweetCard: React.FC<Props> = ({ tweet }) => {
   const { setIsLoading, user } = useAppContext();
   const { dispatch } = useReducerContext();
   const [formState, setFormState] = useState({
@@ -27,7 +23,7 @@ const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
 
   const liked = tweet.likes.includes(user?.userId as string);
 
-  const handleLikeUnlikeClick = async () => {
+  const handleLikeUnlikeClick = useCallback(async () => {
     if (!tweet._id || !user?.userId) {
       return false;
     }
@@ -41,9 +37,9 @@ const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
     }
 
     await fetchAndSetTweets(setIsLoading, dispatch);
-  };
+  }, [dispatch, setIsLoading, tweet._id, user.userId]);
 
-  const handleComment = async () => {
+  const handleComment = useCallback(async () => {
     if (!formState.comment || !tweet._id) {
       return false;
     }
@@ -60,37 +56,22 @@ const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
     }
 
     await fetchAndSetTweets(setIsLoading, dispatch);
-  };
+  }, [dispatch, formState.comment, setIsLoading, tweet._id, tweet.userId]);
 
   return (
-    <div
-      data-cy="TweetCardFooter"
-      className="flex gap-2 m-3 justify-between max-w-full"
-    >
-      <Comment
+    <div className="flex flex-col gap-3 bg-gray-100 hover:bg-gray-200 p-3 border-solid border-2 border-gray-300 max-w-full">
+      <TweetCardHeader tweet={tweet} />
+      <TweetCardFooter
+        liked={liked}
         form={formState}
         setForm={setFormState}
-        commentsAmount={tweet.comments.length}
         onSubmit={handleComment}
-      />
-      <div className="flex gap-1.5 items-center text-gray-600 hover:text-emerald-500">
-        <RepostIcon />
-        123k
-      </div>
-      <LikeUnlikeButton
-        liked={liked}
         likes={tweet.likes.length}
         onLike={handleLikeUnlikeClick}
+        commentsAmount={tweet.comments.length}
       />
-      <div className="flex gap-1.5 items-center text-gray-600 hover:text-blue-500">
-        <ViewIcon /> 4.5m
-      </div>
-      <div className="flex gap-3 items-center">
-        <BookMarkIcon />
-        <ShareIcon />
-      </div>
     </div>
   );
 };
 
-export default TweetCardFooter;
+export default TweetCard;

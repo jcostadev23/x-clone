@@ -5,9 +5,9 @@ import { useAppContext } from "@/hooks/useAppContext";
 import { useReducerContext } from "@/hooks/useReducer";
 import { postTweet } from "@/utils/apiCalls";
 import { useState } from "react";
-import Button from "../Button";
-import TextArea from "../Form/TextArea";
-import { FormEvents } from "../types";
+import Button from "../../../components/Button";
+import TextArea from "../../../components/Form/TextArea";
+import { FormEvents } from "../../../components/types";
 
 const PostTweet = () => {
   const [tweet, setTweet] = useState("");

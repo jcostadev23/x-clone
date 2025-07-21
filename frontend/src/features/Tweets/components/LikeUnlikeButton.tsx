@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import React from "react";
-import ButtonIcon from "../ButtonIcon";
-import LikeIcon from "../Icons/LikeIcon";
+import ButtonIcon from "../../../components/ButtonIcon";
+import LikeIcon from "../../../components/Icons/LikeIcon";
 
 interface Props {
   liked: boolean;

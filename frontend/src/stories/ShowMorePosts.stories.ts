@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import ShowMorePosts from "../components/ShowMorePosts";
+import MoreTweets from "../features/Tweets/MoreTweets";
 
 const meta = {
   title: "Example/ShowMorePosts",
-  component: ShowMorePosts,
+  component: MoreTweets,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-} satisfies Meta<typeof ShowMorePosts>;
+} satisfies Meta<typeof MoreTweets>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

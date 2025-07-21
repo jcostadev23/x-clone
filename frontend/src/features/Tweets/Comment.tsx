@@ -1,8 +1,8 @@
 import React from "react";
-import ButtonIcon from "../ButtonIcon";
-import Form from "../../components/Comments/Form";
-import CommentIcon from "../Icons/CommentIcon";
-import Modal from "../Modal";
+import ButtonIcon from "../../components/ButtonIcon";
+import CommentForm from "./components/CommentForm";
+import CommentIcon from "../../components/Icons/CommentIcon";
+import Modal from "../../components/Modal";
 
 interface FormState {
   isOpen: boolean;
@@ -35,7 +35,7 @@ const Comment: React.FC<Props> = ({
         isOpen={form.isOpen}
         onClose={() => setForm((prev) => ({ ...prev, isOpen: true }))}
       >
-        <Form
+        <CommentForm
           value={form.comment}
           placeHolder="Post your reply"
           onChange={(e) => setForm((prev) => ({ ...prev, comment: e }))}
