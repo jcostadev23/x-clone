@@ -1,10 +1,10 @@
 "use client";
 
-import { ActionsType } from "@/helpers/reducer";
+import { fetchAndSetTweets } from "@/helpers";
 import { useAppContext } from "@/hooks/useAppContext";
-import { Action, useReducerContext } from "@/hooks/useReducer";
+import { useReducerContext } from "@/hooks/useReducer";
 import { Tweet } from "@/types";
-import { addComment, getAllTweets, tweetLikeUnlike } from "@/utils/apiCalls";
+import { addComment, tweetLikeUnlike } from "@/utils/apiCalls";
 import { useState } from "react";
 import BookMarkIcon from "../Icons/BookMarkIcon";
 import RepostIcon from "../Icons/RepostIcon";
@@ -15,22 +15,6 @@ import LikeUnlikeButton from "../TweetButtons/LikeUnlikeButton";
 
 type Props = {
   tweet: Tweet;
-};
-
-const fetchAndSetTweets = async (
-  setIsLoading: (loading: boolean) => void,
-  dispatch: React.Dispatch<Action>
-) => {
-  setIsLoading(true);
-  const tweets = await getAllTweets();
-  setIsLoading(false);
-
-  if (tweets) {
-    dispatch({
-      type: ActionsType.SET_TWEETS,
-      payload: tweets,
-    });
-  }
 };
 
 const TweetCardFooter: React.FC<Props> = ({ tweet }) => {

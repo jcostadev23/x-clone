@@ -39,7 +39,7 @@ const Input: React.FC<Props> = ({
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 flex-1">
       {label && <label className="text-gray-700">{label}</label>}
       <input
         className={inputClass}

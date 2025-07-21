@@ -1,12 +1,12 @@
 "use client";
 
-import { ActionsType } from "@/helpers/reducer";
+import { fetchAndSetTweets } from "@/helpers";
 import { useAppContext } from "@/hooks/useAppContext";
 import { useReducerContext } from "@/hooks/useReducer";
-import { getAllTweets, postTweet } from "@/utils/apiCalls";
+import { postTweet } from "@/utils/apiCalls";
 import { useState } from "react";
 import Button from "../Button";
-import Input from "../Form/Input";
+import TextArea from "../Form/TextArea";
 import { FormEvents } from "../types";
 
 const PostTweet = () => {
@@ -27,25 +27,14 @@ const PostTweet = () => {
       likes: [],
     });
 
+    setTweet("");
     setIsLoading(false);
 
     if (!response) {
       return false;
     }
 
-    setTweet("");
-    setIsLoading(true);
-    const tweets = await getAllTweets();
-    setIsLoading(false);
-
-    if (!tweets) {
-      return false;
-    }
-
-    dispatch({
-      type: ActionsType.SET_TWEETS,
-      payload: tweets,
-    });
+    await fetchAndSetTweets(setIsLoading, dispatch);
   };
 
   return (
@@ -54,7 +43,8 @@ const PostTweet = () => {
         <span className="text-2xl text-white bg-indigo-500 p-4 rounded-full w-12 h-12 flex items-center justify-center">
           J
         </span>
-        <Input
+        <TextArea
+          rows={2}
           value={tweet}
           onChange={setTweet}
           placeholder="What is happening?!"
