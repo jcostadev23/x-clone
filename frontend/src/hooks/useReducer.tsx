@@ -4,7 +4,7 @@ import { createContext, ReactNode, useContext, useReducer } from "react";
 import { State, Tweet } from "../types";
 import { actions, ActionsType } from "@/helpers/reducer";
 
-type Action =
+export type Action =
   | { type: ActionsType.SET_TWEETS; payload: Array<Tweet> }
   | { type: ActionsType.LIKE_TWEET; payload: { id: string; userId: string } };
 

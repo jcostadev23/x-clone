@@ -2,7 +2,7 @@
 
 import { ActionsType } from "@/helpers/reducer";
 import { useAppContext } from "@/hooks/useAppContext";
-import { useReducerContext } from "@/hooks/useReducer";
+import { Action, useReducerContext } from "@/hooks/useReducer";
 import { Tweet } from "@/types";
 import { addComment, getAllTweets, tweetLikeUnlike } from "@/utils/apiCalls";
 import { useState } from "react";
@@ -15,6 +15,22 @@ import LikeUnlikeButton from "../TweetButtons/LikeUnlikeButton";
 
 type Props = {
   tweet: Tweet;
+};
+
+const fetchAndSetTweets = async (
+  setIsLoading: (loading: boolean) => void,
+  dispatch: React.Dispatch<Action>
+) => {
+  setIsLoading(true);
+  const tweets = await getAllTweets();
+  setIsLoading(false);
+
+  if (tweets) {
+    dispatch({
+      type: ActionsType.SET_TWEETS,
+      payload: tweets,
+    });
+  }
 };
 
 const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
@@ -40,18 +56,7 @@ const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
       return false;
     }
 
-    setIsLoading(true);
-    const tweets = await getAllTweets();
-    setIsLoading(false);
-
-    if (!tweets) {
-      return false;
-    }
-
-    dispatch({
-      type: ActionsType.SET_TWEETS,
-      payload: tweets,
-    });
+    await fetchAndSetTweets(setIsLoading, dispatch);
   };
 
   const handleComment = async () => {
@@ -70,18 +75,7 @@ const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
       return false;
     }
 
-    setIsLoading(true);
-    const tweets = await getAllTweets();
-    setIsLoading(false);
-
-    if (!tweets) {
-      return false;
-    }
-
-    dispatch({
-      type: ActionsType.SET_TWEETS,
-      payload: tweets,
-    });
+    await fetchAndSetTweets(setIsLoading, dispatch);
   };
 
   return (
