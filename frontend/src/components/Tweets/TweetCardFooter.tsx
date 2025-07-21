@@ -4,7 +4,8 @@ import { ActionsType } from "@/helpers/reducer";
 import { useAppContext } from "@/hooks/useAppContext";
 import { useReducerContext } from "@/hooks/useReducer";
 import { Tweet } from "@/types";
-import { getAllTweets, tweetLikeUnlike } from "@/utils/apiCalls";
+import { addComment, getAllTweets, tweetLikeUnlike } from "@/utils/apiCalls";
+import { useState } from "react";
 import BookMarkIcon from "../Icons/BookMarkIcon";
 import RepostIcon from "../Icons/RepostIcon";
 import ShareIcon from "../Icons/ShareIcon";
@@ -19,6 +20,10 @@ type Props = {
 const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
   const { setIsLoading, user } = useAppContext();
   const { dispatch } = useReducerContext();
+  const [formState, setFormState] = useState({
+    isOpen: false,
+    comment: "",
+  });
 
   const liked = tweet.likes.includes(user?.userId as string);
 
@@ -49,12 +54,47 @@ const TweetCardFooter: React.FC<Props> = ({ tweet }) => {
     });
   };
 
+  const handleComment = async () => {
+    if (!formState.comment || !tweet._id) {
+      return false;
+    }
+
+    setIsLoading(true);
+    const response = await addComment(tweet._id, {
+      id: tweet.userId,
+      comment: formState.comment,
+    });
+    setIsLoading(false);
+
+    if (!response) {
+      return false;
+    }
+
+    setIsLoading(true);
+    const tweets = await getAllTweets();
+    setIsLoading(false);
+
+    if (!tweets) {
+      return false;
+    }
+
+    dispatch({
+      type: ActionsType.SET_TWEETS,
+      payload: tweets,
+    });
+  };
+
   return (
     <div
       data-cy="TweetCardFooter"
       className="flex gap-2 m-3 justify-between max-w-full"
     >
-      <Comment tweet={tweet} />
+      <Comment
+        form={formState}
+        setForm={setFormState}
+        commentsAmount={tweet.comments.length}
+        onSubmit={handleComment}
+      />
       <div className="flex gap-1.5 items-center text-gray-600 hover:text-emerald-500">
         <RepostIcon />
         123k
