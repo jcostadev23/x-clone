@@ -1,58 +1,22 @@
-"use client";
-
-import { ActionsType } from "@/helpers/reducer";
-import { useAppContext } from "@/hooks/useAppContext";
-import { useReducerContext } from "@/hooks/useReducer";
-import { Tweet } from "@/types";
-import { getAllTweets, tweetLikeUnlike } from "@/utils/apiCalls";
 import { clsx } from "clsx";
 import React from "react";
 import ButtonIcon from "../ButtonIcon";
 import LikeIcon from "../Icons/LikeIcon";
 
 interface Props {
-  tweet: Tweet;
+  liked: boolean;
+  likes: number;
+  onLike: () => void;
 }
 
-const LikeUnlikeButton: React.FC<Props> = ({ tweet }) => {
-  const { setIsLoading, user } = useAppContext();
-  const { dispatch } = useReducerContext();
-  const liked = tweet.likes.includes(user?.userId as string);
-
-  const handleClick = async (id?: string) => {
-    if (!id || !user?.userId) {
-      return false;
-    }
-
-    setIsLoading(true);
-    const resp = await tweetLikeUnlike(id, user.userId);
-    setIsLoading(false);
-
-    if (!resp) {
-      return false;
-    }
-
-    setIsLoading(true);
-    const tweets = await getAllTweets();
-    setIsLoading(false);
-
-    if (!tweets) {
-      return false;
-    }
-
-    dispatch({
-      type: ActionsType.SET_TWEETS,
-      payload: tweets,
-    });
-  };
-
+const LikeUnlikeButton: React.FC<Props> = ({ liked, likes, onLike }) => {
   return (
     <ButtonIcon
       className={clsx("hover:text-red-600", liked && "text-red-600")}
-      onClick={() => handleClick(tweet._id)}
+      onClick={onLike}
       icon={<LikeIcon />}
     >
-      {tweet.likes.length}
+      {likes}
     </ButtonIcon>
   );
 };
