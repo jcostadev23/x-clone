@@ -1,8 +1,6 @@
-"use client";
-
+import Button from "@/components/Button";
+import TextArea from "@/components/Form/TextArea";
 import React from "react";
-import TextArea from "../../Form/TextArea";
-import Button from "../../Button";
 
 type Props = {
   value: string;
@@ -10,7 +8,13 @@ type Props = {
   onChange: (value: string) => void;
   onSubmit: () => void;
 };
-const Form: React.FC<Props> = ({ onSubmit, value, onChange, placeHolder }) => {
+
+const CommentForm: React.FC<Props> = ({
+  onSubmit,
+  value,
+  onChange,
+  placeHolder,
+}) => {
   return (
     <form className="flex flex-col justify-between h-full" onSubmit={onSubmit}>
       <TextArea value={value} onChange={onChange} placeholder={placeHolder} />
@@ -26,4 +30,4 @@ const Form: React.FC<Props> = ({ onSubmit, value, onChange, placeHolder }) => {
   );
 };
 
-export default Form;
+export default CommentForm;
