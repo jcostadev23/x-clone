@@ -9,7 +9,7 @@ interface Props {
   onLike: () => void;
 }
 
-const LikeUnlikeButton: React.FC<Props> = ({ liked, likes, onLike }) => {
+const LikeUnlike: React.FC<Props> = ({ liked, likes, onLike }) => {
   return (
     <ButtonIcon
       className={clsx("hover:text-red-600", liked && "text-red-600")}
@@ -21,4 +21,4 @@ const LikeUnlikeButton: React.FC<Props> = ({ liked, likes, onLike }) => {
   );
 };
 
-export default LikeUnlikeButton;
+export default LikeUnlike;

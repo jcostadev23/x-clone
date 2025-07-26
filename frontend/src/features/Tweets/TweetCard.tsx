@@ -1,13 +1,13 @@
 "use client";
 
-import { Tweet } from "@/types";
-import TweetCardFooter from "./TweetCardFooter";
-import TweetCardHeader from "./components/TweetCardHeader";
+import { fetchAndSetTweets } from "@/helpers";
 import { useAppContext } from "@/hooks/useAppContext";
 import { useReducerContext } from "@/hooks/useReducer";
-import { useCallback, useState } from "react";
+import { Tweet } from "@/types";
 import { addComment, tweetLikeUnlike } from "@/utils/apiCalls";
-import { fetchAndSetTweets } from "@/helpers";
+import { useCallback, useState } from "react";
+import { Footer } from "./Footer";
+import TweetCardHeader from "./components/TweetCardHeader";
 
 type Props = {
   tweet: Tweet;
@@ -61,15 +61,22 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
   return (
     <div className="flex flex-col gap-3 bg-gray-100 hover:bg-gray-200 p-3 border-solid border-2 border-gray-300 max-w-full">
       <TweetCardHeader tweet={tweet} />
-      <TweetCardFooter
-        liked={liked}
-        form={formState}
-        setForm={setFormState}
-        onSubmit={handleComment}
-        likes={tweet.likes.length}
-        onLike={handleLikeUnlikeClick}
-        commentsAmount={tweet.comments.length}
-      />
+      <Footer.root>
+        <Footer.comment
+          form={formState}
+          setForm={setFormState}
+          commentsAmount={tweet.comments.length}
+          onSubmit={handleComment}
+        />
+        <Footer.repost />
+        <Footer.likeUnlike
+          liked={liked}
+          likes={tweet.likes.length}
+          onLike={handleLikeUnlikeClick}
+        />
+        <Footer.views />
+        <Footer.actions />
+      </Footer.root>
     </div>
   );
 };
