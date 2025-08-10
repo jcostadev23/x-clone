@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/features/Tweets/Header/TweetDetails.test.js"
+    "src/features/Tweets/Header/TweetDetails.test.js",
+    "fileMock.js"
   ],
   "exclude": ["node_modules"]
 }
