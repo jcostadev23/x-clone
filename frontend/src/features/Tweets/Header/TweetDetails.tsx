@@ -11,7 +11,9 @@ const TweetDetails: React.FC<Props> = ({ tweet }) => {
     <section>
       <div className="flex gap-2">
         <Link href={`/user/${userId}`}>
-          <strong className="text-black text-md">{userName}</strong>
+          <strong data-testid="userName" className="text-black text-md">
+            {userName}
+          </strong>
         </Link>
         <span className="text-sm" title={date}>
           {date}
