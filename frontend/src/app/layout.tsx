@@ -1,5 +1,6 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppProvider } from "@/hooks/useAppContext";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -29,9 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ErrorBoundary fallback={<h1>Im inside the errorBoundary</h1>}>
-          <AppProvider>{children}</AppProvider>
-        </ErrorBoundary>
+        <PostHogProvider>
+          <ErrorBoundary fallback={<h1>Im inside the errorBoundary</h1>}>
+            <AppProvider>{children}</AppProvider>
+          </ErrorBoundary>
+        </PostHogProvider>
       </body>
     </html>
   );
