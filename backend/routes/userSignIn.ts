@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { express } from "../dependecies";
+import { express } from "../dependencies";
 import User from "../models/users";
 
 const router = express.Router();

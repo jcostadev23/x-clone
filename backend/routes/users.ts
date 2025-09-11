@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { express } from "../dependecies";
+import { express } from "../dependencies";
 import authenticateToken from "../middleware/auth";
 import User from "../models/users";
 

@@ -1,4 +1,4 @@
-import { express } from "../dependecies";
+import { express } from "../dependencies";
 import authenticateToken, { AuthRequest } from "../middleware/auth";
 import Tweet from "../models/tweet";
 import User from "../models/users";

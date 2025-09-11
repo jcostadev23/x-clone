@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import cookieParser from "cookie-parser";
-import { connectDataBase, cors, express, path, port } from "./dependecies";
+import { connectDataBase, cors, express, path, port } from "./dependencies";
 import tweetsRouter from "./routes/tweets";
 import usersRouter from "./routes/users";
 import userSignInRouter from "./routes/userSignIn";
