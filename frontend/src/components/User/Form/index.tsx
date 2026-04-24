@@ -1,13 +1,9 @@
 "use client";
 
 import { useAppContext } from "@/hooks/useAppContext";
-import xIcon from "@/public/x-logo.png";
 import { postUser } from "@/utils/apiCalls";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-import Button from "../../Button";
-import Input from "../../Form/Input";
 
 type Props = {
   handleClose: (value: boolean) => void;
@@ -16,70 +12,65 @@ type Props = {
 const UserForm: React.FC<Props> = ({ handleClose }) => {
   const { startLoading, stopLoading } = useAppContext();
   const router = useRouter();
-  const [user, setUser] = useState({
-    email: "",
-    userName: "",
-    birthDate: "",
-    password: "",
-  });
+  const [user, setUser] = useState({ email: "", userName: "", birthDate: "", password: "" });
+  const [error, setError] = useState("");
 
-  const onSubmit = useCallback(async () => {
-    handleClose(false);
+  const onSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
     startLoading();
     const response = await postUser(user);
     stopLoading();
 
-    if (response?.success) {
-      router.push("/");
-      router.refresh();
+    if (!response?.success) {
+      setError(response ? "Username or email already in use." : "Something went wrong. Try again.");
+      return;
     }
+
+    handleClose(false);
+    router.push("/");
+    router.refresh();
   }, [handleClose, startLoading, stopLoading, user, router]);
 
+  const fields = [
+    { key: "userName" as const, label: "Username", type: "text" },
+    { key: "email" as const, label: "Email", type: "email" },
+    { key: "password" as const, label: "Password", type: "password" },
+    { key: "birthDate" as const, label: "Date of birth", type: "date" },
+  ];
+
   return (
-    <>
-      <form>
-        <div className="flex flex-col items-center gap-3 text-black">
-          <Image height={30} width={30} alt="x image" src={xIcon} />
-          <h3>Create your account</h3>
-        </div>
-        <div className="flex flex-col gap-2 px-4 py-4">
-          <Input
-            label="Name"
-            form={true}
-            value={user.userName}
-            onChange={(value) => setUser((prev) => ({ ...prev, userName: value }))}
+    <form onSubmit={onSubmit} className="px-10 pb-10 flex flex-col gap-6">
+      <div className="text-center">
+        <h2 className="text-[31px] font-extrabold text-[#0F1419]">Create your account</h2>
+      </div>
+
+      {error && (
+        <p className="text-rose-500 text-[15px] text-center">{error}</p>
+      )}
+
+      <div className="flex flex-col gap-4">
+        {fields.map(({ key, label, type }) => (
+          <input
+            key={key}
+            type={type}
+            value={user[key]}
+            onChange={(e) => setUser((p) => ({ ...p, [key]: e.target.value }))}
+            placeholder={label}
+            className="w-full border border-[#CFD9DE] rounded-md px-3 py-3 text-[17px] text-[#0F1419] placeholder-[#536471] outline-none focus:border-[#1D9BF0] focus:ring-1 focus:ring-[#1D9BF0] transition-all"
+            required
           />
-          <Input
-            label="Email"
-            type="email"
-            form={true}
-            value={user.email}
-            onChange={(value) => setUser((prev) => ({ ...prev, email: value }))}
-          />
-          <Input
-            label="Password"
-            type="password"
-            form={true}
-            value={user.password}
-            onChange={(value) => setUser((prev) => ({ ...prev, password: value }))}
-          />
-          <Input
-            label="Date of birth"
-            type="date"
-            form={true}
-            value={user.birthDate}
-            onChange={(value) => setUser((prev) => ({ ...prev, birthDate: value }))}
-          />
-        </div>
-        <Button
-          className="py-2 px-4 m-4"
-          backgroundColor="secondary"
-          label="Submit"
-          onClick={onSubmit}
-          applyMinWidth
-        />
-      </form>
-    </>
+        ))}
+      </div>
+
+      <button
+        type="submit"
+        disabled={Object.values(user).some((v) => !v)}
+        className="w-full bg-[#0F1419] hover:bg-[#272C30] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-full py-3 text-[17px] transition-colors"
+      >
+        Create account
+      </button>
+    </form>
   );
 };
 
