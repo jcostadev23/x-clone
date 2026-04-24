@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
 import { connectDataBase, cors, express, path, port } from "./dependecies";
 import tweetsRouter from "./routes/tweets";
 import usersRouter from "./routes/users";
@@ -10,6 +11,7 @@ import userSignInRouter from "./routes/userSignIn";
 connectDataBase();
 
 const app = express();
+
 app.use(
   cors({
     origin: process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000",
@@ -19,15 +21,31 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {
-  res.send({ message: "Welcome to X clone API" });
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { success: false, error: "Too many requests, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
-app.use("/tweets", tweetsRouter);
-app.use("/users", usersRouter);
-app.use("/signin", userSignInRouter);
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { success: false, error: "Too many requests, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.get("/", (_req, res) => {
+  res.json({ message: "Welcome to X clone API" });
+});
+
+app.use("/tweets", generalLimiter, tweetsRouter);
+app.use("/users", generalLimiter, usersRouter);
+app.use("/signin", authLimiter, userSignInRouter);
 
 app.listen(port, () => console.log(`Server listening on port: ${port}`));

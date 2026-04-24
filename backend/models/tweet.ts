@@ -1,25 +1,36 @@
 import mongoose from "mongoose";
 
+const commentSchema = new mongoose.Schema(
+  {
+    id: { type: String, required: true },
+    comment: { type: String, required: true, maxlength: 280 },
+  },
+  { _id: false }
+);
+
 const tweetSchema = new mongoose.Schema({
   userId: {
     type: String,
-    required: [false],
+    required: true,
+    index: true,
   },
   userName: {
     type: String,
-    required: [false],
+    required: true,
   },
   description: {
     type: String,
-    required: [true, "Please add a name"],
+    required: [true, "Please add a description"],
+    maxlength: [280, "Tweet cannot exceed 280 characters"],
+    trim: true,
   },
   likes: {
-    type: Array,
-    required: [false],
+    type: [String],
+    default: [],
   },
   comments: {
-    type: Array,
-    required: [false],
+    type: [commentSchema],
+    default: [],
   },
   date: {
     type: Date,

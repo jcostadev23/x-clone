@@ -4,10 +4,15 @@ const usersSchema = new mongoose.Schema({
   userName: {
     type: String,
     required: [true, "Please add a name"],
+    unique: true,
+    trim: true,
   },
   email: {
     type: String,
     required: [true, "Please add a email"],
+    unique: true,
+    lowercase: true,
+    trim: true,
   },
   passwordHash: {
     type: String,
@@ -23,6 +28,9 @@ const usersSchema = new mongoose.Schema({
   },
   follow: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
+
+usersSchema.index({ userName: 1 }, { unique: true });
+usersSchema.index({ email: 1 }, { unique: true });
 
 const User = mongoose.model("User", usersSchema);
 
