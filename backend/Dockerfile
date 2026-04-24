@@ -1,17 +1,22 @@
-# backend/Dockerfile
-FROM node:18
+FROM node:22-alpine AS builder
 
-# Create work directory
 WORKDIR /server
 
-# Copy files
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci --omit=dev=false
 
 COPY . .
+RUN npm run build
 
-# Expose port
+FROM node:22-alpine
+
+WORKDIR /server
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY --from=builder /server/dist ./dist
+
 EXPOSE 4000
 
-# Start aplication
-CMD ["node", "server.js"]
+CMD ["node", "dist/server.js"]
