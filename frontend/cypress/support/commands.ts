@@ -1,37 +1,53 @@
 /// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
+const API = "http://localhost:4000";
+
+const TEST_USER = {
+  userName: "cypress_user",
+  email: "cypress@xclone.test",
+  password: "Cypress1234!",
+  birthDate: "1990-01-01",
+};
+
+/**
+ * Registers the shared test user, silently ignoring 409 if they already exist.
+ * Call once in a before() block for suites that need an authenticated user.
+ */
+Cypress.Commands.add("registerTestUser", () => {
+  cy.request({
+    method: "POST",
+    url: `${API}/users`,
+    body: { user: TEST_USER },
+    failOnStatusCode: false,
+  });
+});
+
+/**
+ * Programmatic login — bypasses the UI and sets the httpOnly cookie directly.
+ * Much faster than clicking through the sign-in form.
+ */
+Cypress.Commands.add("login", () => {
+  cy.request({
+    method: "POST",
+    url: `${API}/signin`,
+    body: { userName: TEST_USER.userName, password: TEST_USER.password },
+    failOnStatusCode: false,
+  }).its("status").should("eq", 200);
+});
+
+/**
+ * Returns the shared test-user credentials for form-level tests.
+ */
+Cypress.Commands.add("getTestUser", () => {
+  return cy.wrap(TEST_USER);
+});
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      registerTestUser(): Chainable<void>;
+      login(): Chainable<void>;
+      getTestUser(): Chainable<typeof TEST_USER>;
+    }
+  }
+}

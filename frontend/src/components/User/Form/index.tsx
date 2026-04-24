@@ -2,7 +2,6 @@
 
 import { useAppContext } from "@/hooks/useAppContext";
 import { postUser } from "@/utils/apiCalls";
-import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 
 type Props = {
@@ -11,7 +10,6 @@ type Props = {
 
 const UserForm: React.FC<Props> = ({ handleClose }) => {
   const { startLoading, stopLoading } = useAppContext();
-  const router = useRouter();
   const [user, setUser] = useState({ email: "", userName: "", birthDate: "", password: "" });
   const [error, setError] = useState("");
 
@@ -28,9 +26,8 @@ const UserForm: React.FC<Props> = ({ handleClose }) => {
     }
 
     handleClose(false);
-    router.push("/");
-    router.refresh();
-  }, [handleClose, startLoading, stopLoading, user, router]);
+    window.location.replace("/");
+  }, [handleClose, startLoading, stopLoading, user]);
 
   const fields = [
     { key: "userName" as const, label: "Username", type: "text" },

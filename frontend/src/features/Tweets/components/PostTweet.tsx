@@ -36,7 +36,7 @@ const PostTweet = () => {
   };
 
   return (
-    <form onSubmit={onSubmit} className="px-4 pt-3 pb-1 border-b border-[#EFF3F4]">
+    <form data-cy="post-tweet-form" onSubmit={onSubmit} className="px-4 pt-3 pb-1 border-b border-[#EFF3F4]">
       <div className="flex gap-3">
         {/* Avatar */}
         <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1">
@@ -46,6 +46,7 @@ const PostTweet = () => {
         {/* Input area */}
         <div className="flex-1 min-w-0">
           <textarea
+            data-cy="tweet-textarea"
             value={tweet}
             onChange={(e) => setTweet(e.target.value)}
             placeholder="What is happening?!"
@@ -98,6 +99,7 @@ const PostTweet = () => {
                 </span>
               )}
               <button
+                data-cy="post-tweet-btn"
                 type="submit"
                 disabled={!tweet.trim() || isOverLimit}
                 className="bg-[#1D9BF0] hover:bg-[#1A8CD8] disabled:opacity-50 disabled:cursor-not-allowed text-white text-[15px] font-bold rounded-full px-4 py-1.5 transition-colors"

@@ -10,7 +10,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "test:unit": "vitest run --project unit",
+    "test:unit:watch": "vitest --project unit"
   },
   "dependencies": {
     "clsx": "^2.1.1",

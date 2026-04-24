@@ -45,7 +45,7 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
   }, [comment, dispatch, startLoading, stopLoading, tweet._id, tweet.userId]);
 
   return (
-    <article className="border-b border-[#EFF3F4] px-4 py-3 hover:bg-black/[0.02] cursor-pointer transition-colors">
+    <article data-cy="tweet-card" className="border-b border-[#EFF3F4] px-4 py-3 hover:bg-black/[0.02] cursor-pointer transition-colors">
       <div className="flex gap-3">
         {/* Avatar */}
         <Link href={`/user/${tweet.userId}`} onClick={(e) => e.stopPropagation()}>
@@ -85,6 +85,7 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
           <div className="flex items-center justify-between mt-3 -ml-2 max-w-[425px] text-[#536471]">
             {/* Comment */}
             <button
+              data-cy="tweet-comment-btn"
               className="group flex items-center gap-1"
               onClick={(e) => { e.stopPropagation(); setCommentOpen(true); }}
             >
@@ -106,6 +107,7 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
 
             {/* Like */}
             <button
+              data-cy="tweet-like-btn"
               className="group flex items-center gap-1"
               onClick={(e) => { e.stopPropagation(); handleLike(); }}
             >

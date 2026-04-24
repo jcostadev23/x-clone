@@ -9,8 +9,23 @@ const dirname =
     : path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.join(dirname, "src"),
+    },
+  },
   test: {
     workspace: [
+      // Unit tests — run in Node (no browser needed)
+      {
+        test: {
+          name: "unit",
+          environment: "node",
+          globals: true,
+          include: ["src/__tests__/**/*.test.ts"],
+        },
+      },
+      // Storybook component tests — run in a real browser
       {
         extends: true,
         plugins: [

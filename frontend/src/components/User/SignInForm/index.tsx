@@ -2,7 +2,6 @@
 
 import { useAppContext } from "@/hooks/useAppContext";
 import { signIn } from "@/utils/apiCalls";
-import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 
 type Props = {
@@ -11,7 +10,6 @@ type Props = {
 
 const SignInForm: React.FC<Props> = ({ handleClose }) => {
   const { startLoading, stopLoading } = useAppContext();
-  const router = useRouter();
   const [user, setUser] = useState({ userName: "", password: "" });
   const [error, setError] = useState("");
 
@@ -28,9 +26,9 @@ const SignInForm: React.FC<Props> = ({ handleClose }) => {
     }
 
     handleClose(false);
-    router.push("/");
-    router.refresh();
-  }, [handleClose, startLoading, stopLoading, user, router]);
+    // Hard redirect ensures the new httpOnly cookie is sent in the fresh request
+    window.location.replace("/");
+  }, [handleClose, startLoading, stopLoading, user]);
 
   return (
     <form onSubmit={onSubmit} className="px-10 pb-10 flex flex-col gap-6">
