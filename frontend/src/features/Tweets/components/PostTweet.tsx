@@ -11,37 +11,29 @@ import { FormEvents } from "../../../components/types";
 
 const PostTweet = () => {
   const [tweet, setTweet] = useState("");
-  const { setIsLoading } = useAppContext();
+  const { startLoading, stopLoading, user } = useAppContext();
   const { dispatch } = useReducerContext();
 
   const onSubmit = async (event: FormEvents) => {
     event.preventDefault();
-    if (!tweet.trim()) {
-      return;
+    if (!tweet.trim()) return;
+
+    startLoading();
+    const response = await postTweet({ description: tweet.trim(), comments: [], likes: [] });
+    if (response) {
+      setTweet("");
+      await fetchAndSetTweets(startLoading, stopLoading, dispatch);
     }
-
-    setIsLoading(true);
-    const response = await postTweet({
-      description: tweet,
-      comments: [],
-      likes: [],
-    });
-
-    setTweet("");
-    setIsLoading(false);
-
-    if (!response) {
-      return false;
-    }
-
-    await fetchAndSetTweets(setIsLoading, dispatch);
+    stopLoading();
   };
+
+  const initial = user?.userName?.[0]?.toUpperCase() ?? "?";
 
   return (
     <form onSubmit={onSubmit}>
       <section className="flex gap-3 items-center p-6">
         <span className="text-2xl text-white bg-indigo-500 p-4 rounded-full w-12 h-12 flex items-center justify-center">
-          J
+          {initial}
         </span>
         <TextArea
           rows={2}
@@ -51,12 +43,7 @@ const PostTweet = () => {
         />
       </section>
       <div className="flex justify-end m-2">
-        <Button
-          type="submit"
-          label="Post"
-          applyMinWidth
-          backgroundColor="secondary"
-        />
+        <Button type="submit" label="Post" applyMinWidth backgroundColor="secondary" />
       </div>
     </form>
   );

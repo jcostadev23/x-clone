@@ -3,17 +3,15 @@ import { getAllTweets } from "@/utils/apiCalls";
 import { ActionsType } from "./reducer";
 
 export const fetchAndSetTweets = async (
-  setIsLoading: (loading: boolean) => void,
+  startLoading: () => void,
+  stopLoading: () => void,
   dispatch: React.Dispatch<Action>
 ) => {
-  setIsLoading(true);
+  startLoading();
   const tweets = await getAllTweets();
-  setIsLoading(false);
+  stopLoading();
 
   if (tweets) {
-    dispatch({
-      type: ActionsType.SET_TWEETS,
-      payload: tweets,
-    });
+    dispatch({ type: ActionsType.SET_TWEETS, payload: tweets });
   }
 };

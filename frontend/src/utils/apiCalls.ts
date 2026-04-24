@@ -13,47 +13,43 @@ export const getAllTweets = async (params?: ListParams) => {
         "Content-Type": "application/json",
       },
     });
-
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     tweets = await resp.json();
   } catch (error) {
-    console.warn("Error on fetch tweets", error);
+    console.warn("Error fetching tweets:", error);
   }
   return tweets.data;
 };
 
 export const postTweet = async (tweet: Partial<Tweet>) => {
-  const response = await fetch(`${url}/tweets`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      tweet,
-    }),
-  });
-
-  const data = await response.json();
-  return data.data;
+  try {
+    const response = await fetch(`${url}/tweets`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tweet }),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error posting tweet:", error);
+    return null;
+  }
 };
 
-export const tweetLikeUnlike = async (tweetId: string, userId: string) => {
+export const tweetLikeUnlike = async (tweetId: string) => {
   try {
     const response = await fetch(`${url}/tweets/${tweetId}`, {
       method: "PUT",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-      }),
+      headers: { "Content-Type": "application/json" },
     });
-    const data = await response.json();
-    return data;
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
   } catch (error) {
-    console.error("Error on put likes", error);
-    return false;
+    console.error("Error toggling like:", error);
+    return null;
   }
 };
 
@@ -62,18 +58,14 @@ export const addComment = async (tweetId: string, comment: Comment) => {
     const response = await fetch(`${url}/tweets/${tweetId}/comment`, {
       method: "PUT",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        comment: comment,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ comment: comment.comment }),
     });
-    const data = await response.json();
-    return data;
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
   } catch (error) {
-    console.error("Error on put Comment", error);
-    return false;
+    console.error("Error posting comment:", error);
+    return null;
   }
 };
 
@@ -85,53 +77,43 @@ export const getAllUsers = async () => {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
     });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     users = await resp.json();
   } catch (error) {
-    console.warn("Error on fetch tweets", error);
+    console.warn("Error fetching users:", error);
   }
   return users.data;
 };
 
 export const postUser = async (user: User) => {
-  const response = await fetch(`${url}/users/`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      user,
-    }),
-  });
-
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(`${url}/users/`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user }),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return null;
+  }
 };
 
-export const signIn = async (user: {
-  userName: string;
-  passwordHash: string;
-}) => {
+export const signIn = async (user: { userName: string; password: string }) => {
   try {
     const resp = await fetch(`${url}/signin`, {
       method: "POST",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...user,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
     });
-    const data = await resp.json();
-
-    if (!data) {
-      return false;
-    }
-
-    return data;
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return await resp.json();
   } catch (error) {
-    console.error("Error on Sign in", error);
+    console.error("Error signing in:", error);
+    return null;
   }
 };
 
@@ -142,10 +124,12 @@ export const getUserById = async (userId: string) => {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
     });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const user = await response.json();
     return user.data;
   } catch (error) {
-    console.error(`There was an error on geting the user: ${error}`);
+    console.error("Error fetching user:", error);
+    return null;
   }
 };
 
@@ -154,19 +138,28 @@ export const follow = async (userId: string) => {
     const resp = await fetch(`${url}/users/follow/${userId}`, {
       method: "POST",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
-    const data = await resp.json();
-
-    if (!data) {
-      return false;
-    }
-
-    return data;
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return await resp.json();
   } catch (error) {
-    console.error("Error on Follow user", error);
+    console.error("Error following user:", error);
+    return null;
+  }
+};
+
+export const unfollow = async (userId: string) => {
+  try {
+    const resp = await fetch(`${url}/users/unfollow/${userId}`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return await resp.json();
+  } catch (error) {
+    console.error("Error unfollowing user:", error);
+    return null;
   }
 };
 
@@ -177,11 +170,11 @@ export const getMe = async () => {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
     });
-
+    if (!resp.ok) return null;
     const me = await resp.json();
-
     return me.user;
   } catch (error) {
-    console.log(`There was an error on getting my details: ${error}`);
+    console.log("Error fetching current user:", error);
+    return null;
   }
 };

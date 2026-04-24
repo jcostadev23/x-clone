@@ -1,38 +1,39 @@
-"use cliente";
+"use client";
 
 import { useAppContext } from "@/hooks/useAppContext";
 import xIcon from "@/public/x-logo.png";
-import { User } from "@/types";
 import { postUser } from "@/utils/apiCalls";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import Button from "../../Button";
 import Input from "../../Form/Input";
-import { redirect } from "next/navigation";
 
 type Props = {
   handleClose: (value: boolean) => void;
 };
 
 const UserForm: React.FC<Props> = ({ handleClose }) => {
-  const { setIsLoading } = useAppContext();
-  const [user, setUser] = useState<User>({
+  const { startLoading, stopLoading } = useAppContext();
+  const router = useRouter();
+  const [user, setUser] = useState({
     email: "",
     userName: "",
     birthDate: "",
-    passwordHash: "",
+    password: "",
   });
 
   const onSubmit = useCallback(async () => {
     handleClose(false);
-    setIsLoading(true);
+    startLoading();
     const response = await postUser(user);
-    setIsLoading(false);
+    stopLoading();
 
-    if (response) {
-      redirect("/");
+    if (response?.success) {
+      router.push("/");
+      router.refresh();
     }
-  }, [handleClose, setIsLoading, user]);
+  }, [handleClose, startLoading, stopLoading, user, router]);
 
   return (
     <>
@@ -46,9 +47,7 @@ const UserForm: React.FC<Props> = ({ handleClose }) => {
             label="Name"
             form={true}
             value={user.userName}
-            onChange={(value) =>
-              setUser((prev) => ({ ...prev, userName: value }))
-            }
+            onChange={(value) => setUser((prev) => ({ ...prev, userName: value }))}
           />
           <Input
             label="Email"
@@ -61,23 +60,19 @@ const UserForm: React.FC<Props> = ({ handleClose }) => {
             label="Password"
             type="password"
             form={true}
-            value={user.passwordHash}
-            onChange={(value) =>
-              setUser((prev) => ({ ...prev, passwordHash: value }))
-            }
+            value={user.password}
+            onChange={(value) => setUser((prev) => ({ ...prev, password: value }))}
           />
           <Input
             label="Date of birth"
             type="date"
             form={true}
             value={user.birthDate}
-            onChange={(value) =>
-              setUser((prev) => ({ ...prev, birthDate: value }))
-            }
+            onChange={(value) => setUser((prev) => ({ ...prev, birthDate: value }))}
           />
         </div>
         <Button
-          className="py-2 px-4 m-4 "
+          className="py-2 px-4 m-4"
           backgroundColor="secondary"
           label="Submit"
           onClick={onSubmit}

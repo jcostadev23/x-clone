@@ -1,10 +1,10 @@
-"use cliente";
+"use client";
 
 import { useAppContext } from "@/hooks/useAppContext";
 import xIcon from "@/public/x-logo.png";
 import { signIn } from "@/utils/apiCalls";
 import Image from "next/image";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import Button from "../../Button";
 import Input from "../../Form/Input";
@@ -14,19 +14,21 @@ type Props = {
 };
 
 const SignInForm: React.FC<Props> = ({ handleClose }) => {
-  const { setIsLoading } = useAppContext();
-  const [user, setUser] = useState({ userName: "", passwordHash: "" });
+  const { startLoading, stopLoading } = useAppContext();
+  const router = useRouter();
+  const [user, setUser] = useState({ userName: "", password: "" });
 
   const onSubmit = useCallback(async () => {
-    setIsLoading(true);
+    startLoading();
     const response = await signIn(user);
-    setIsLoading(false);
+    stopLoading();
     handleClose(false);
 
-    if (response) {
-      redirect("/");
+    if (response?.success) {
+      router.push("/");
+      router.refresh();
     }
-  }, [handleClose, setIsLoading, user]);
+  }, [handleClose, startLoading, stopLoading, user, router]);
 
   return (
     <>
@@ -40,22 +42,18 @@ const SignInForm: React.FC<Props> = ({ handleClose }) => {
             label="Name"
             form={true}
             value={user.userName}
-            onChange={(values) =>
-              setUser((prev) => ({ ...prev, userName: values }))
-            }
+            onChange={(value) => setUser((prev) => ({ ...prev, userName: value }))}
           />
           <Input
             label="Password"
             type="password"
             form={true}
-            value={user.passwordHash}
-            onChange={(value) =>
-              setUser((prev) => ({ ...prev, passwordHash: value }))
-            }
+            value={user.password}
+            onChange={(value) => setUser((prev) => ({ ...prev, password: value }))}
           />
         </div>
         <Button
-          className="py-2 px-4 m-4 "
+          className="py-2 px-4 m-4"
           backgroundColor="secondary"
           label="Sign in"
           onClick={onSubmit}

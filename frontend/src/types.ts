@@ -22,7 +22,7 @@ export type User = {
   userName: string;
   email: string;
   birthDate: string;
-  passwordHash: string;
+  password: string;
 };
 
 export type ListParams = {

@@ -9,6 +9,10 @@ const Page: React.FC<Props> = async ({ params }) => {
   const { userId } = await params;
   const user = await getUserById(userId);
 
+  if (!user) {
+    return <div>User not found</div>;
+  }
+
   return (
     <div className="flex gap-2 justify-center align-middle text-3xl">
       {user.userName}

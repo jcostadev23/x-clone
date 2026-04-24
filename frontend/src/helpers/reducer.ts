@@ -10,16 +10,21 @@ const setTweets = (state: State, payload: Array<Tweet>) => ({
   tweets: payload,
 });
 
-const setLike = (state: State, payload: { id: string; userId: string }) => ({
+const toggleLike = (state: State, payload: { id: string; userId: string }) => ({
   ...state,
-  tweets: state.tweets.map((tweet) =>
-    tweet._id === payload.id
-      ? { ...tweet, likes: [...tweet.likes, payload.userId] }
-      : tweet
-  ),
+  tweets: state.tweets.map((tweet) => {
+    if (tweet._id !== payload.id) return tweet;
+    const alreadyLiked = tweet.likes.includes(payload.userId);
+    return {
+      ...tweet,
+      likes: alreadyLiked
+        ? tweet.likes.filter((id) => id !== payload.userId)
+        : [...tweet.likes, payload.userId],
+    };
+  }),
 });
 
 export const actions = {
   [ActionsType.SET_TWEETS]: setTweets,
-  [ActionsType.LIKE_TWEET]: setLike,
+  [ActionsType.LIKE_TWEET]: toggleLike,
 };
