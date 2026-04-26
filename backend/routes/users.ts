@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { express } from "../dependecies";
 import authenticateToken from "../middleware/auth";
 import User from "../models/users";
+import Notification from "../models/notification";
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get("/", authenticateToken, async (_req: any, res: any) => {
   try {
     const users = await User.find().select(SAFE_USER_FIELDS);
     res.json({ success: true, data: users });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: "Something went wrong getting users" });
   }
 });
@@ -53,7 +54,7 @@ router.post("/", async (req: any, res: any) => {
     });
 
     res.status(201).json({ success: true });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: "Something went wrong creating the user" });
   }
 });
@@ -64,8 +65,42 @@ router.get("/me", authenticateToken, async (req: any, res: any) => {
       success: true,
       user: { userId: req.user.userId, userName: req.user.userName },
     });
-  } catch (error) {
+  } catch {
     res.status(401).json({ success: false, error: "Invalid token" });
+  }
+});
+
+router.put("/me/profile", authenticateToken, async (req: any, res: any) => {
+  try {
+    const { bio, profilePicture, coverPhoto } = req.body;
+    const update: Record<string, string> = {};
+
+    if (typeof bio === "string") update.bio = bio.slice(0, 160);
+    if (typeof profilePicture === "string") update.profilePicture = profilePicture;
+    if (typeof coverPhoto === "string") update.coverPhoto = coverPhoto;
+
+    const updated = await User.findByIdAndUpdate(
+      req.user.userId,
+      { $set: update },
+      { new: true }
+    ).select(SAFE_USER_FIELDS);
+
+    res.json({ success: true, data: updated });
+  } catch {
+    res.status(500).json({ success: false, error: "Something went wrong updating profile" });
+  }
+});
+
+router.get("/search", authenticateToken, async (req: any, res: any) => {
+  try {
+    const q = (req.query.q as string)?.trim();
+    if (!q) return res.json({ success: true, data: [] });
+
+    const regex = new RegExp(q, "i");
+    const users = await User.find({ userName: regex }).select(SAFE_USER_FIELDS).limit(10);
+    res.json({ success: true, data: users });
+  } catch {
+    res.status(500).json({ success: false, error: "Something went wrong searching users" });
   }
 });
 
@@ -78,8 +113,10 @@ router.get("/:userId", authenticateToken, async (req: any, res: any) => {
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    res.json({ success: true, data: user });
-  } catch (error) {
+    const followersCount = await User.countDocuments({ follow: userId });
+
+    res.json({ success: true, data: { ...user.toObject(), followersCount } });
+  } catch {
     res.status(500).json({ success: false, error: "Something went wrong getting the user" });
   }
 });
@@ -99,8 +136,16 @@ router.post("/follow/:userId", authenticateToken, async (req: any, res: any) => 
     }
 
     await User.findByIdAndUpdate(followerId, { $addToSet: { follow: followingId } });
+
+    await Notification.create({
+      type: "follow",
+      fromUserId: followerId,
+      fromUserName: req.user.userName,
+      toUserId: followingId,
+    });
+
     res.json({ success: true, message: "Now you are following the user" });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: "Something went wrong following the user" });
   }
 });
@@ -112,7 +157,7 @@ router.post("/unfollow/:userId", authenticateToken, async (req: any, res: any) =
 
     await User.findByIdAndUpdate(followerId, { $pull: { follow: followingId } });
     res.json({ success: true, message: "Unfollowed successfully" });
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: "Something went wrong unfollowing the user" });
   }
 });
