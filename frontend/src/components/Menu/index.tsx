@@ -71,7 +71,7 @@ const Menu = () => {
     },
     {
       label: "Profile",
-      href: "/signin",
+      href: user?.userId ? `/user/${user.userId}` : "/signin",
       icon: <FaRegUser size={22} />,
       activeIcon: <FaRegUser size={22} style={{ fill: "#0F1419" }} />,
     },

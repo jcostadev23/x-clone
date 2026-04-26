@@ -1,15 +1,21 @@
-import { getUserById } from "@/utils/apiCalls";
+import { getUserById, getUserTweets, getMe } from "@/utils/apiCalls";
 import UserPage from "./UserPage";
+import UserProfileTweets from "./UserProfileTweets";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import Link from "next/link";
 
 type Props = {
-  params: { userId: string };
+  params: Promise<{ userId: string }>;
 };
 
-const Page: React.FC<Props> = async ({ params }) => {
+const Page = async ({ params }: Props) => {
   const { userId } = await params;
-  const user = await getUserById(userId);
+
+  const [user, tweets, me] = await Promise.all([
+    getUserById(userId),
+    getUserTweets(userId),
+    getMe(),
+  ]);
 
   if (!user) {
     return (
@@ -20,6 +26,10 @@ const Page: React.FC<Props> = async ({ params }) => {
   }
 
   const initial = user.userName?.[0]?.toUpperCase() ?? "?";
+  const isOwnProfile = me?.userId === userId;
+  const isFollowed = Array.isArray(user.follow)
+    ? user.follow.map(String).includes(me?.userId ?? "")
+    : false;
 
   return (
     <div className="min-h-screen bg-white">
@@ -36,20 +46,33 @@ const Page: React.FC<Props> = async ({ params }) => {
             <h2 className="text-[20px] font-bold text-[#0F1419] leading-tight">
               {user.userName}
             </h2>
-            <p className="text-[13px] text-[#536471]">0 posts</p>
+            <p className="text-[13px] text-[#536471]">{tweets.length} posts</p>
           </div>
         </div>
 
         {/* Banner */}
-        <div className="h-[200px] bg-[#CFD9DE]" />
+        {user.coverPhoto ? (
+          <img src={user.coverPhoto} alt="Cover" className="h-[200px] w-full object-cover" />
+        ) : (
+          <div className="h-[200px] bg-[#CFD9DE]" />
+        )}
 
-        {/* Avatar + follow button row */}
+        {/* Avatar + action buttons row */}
         <div className="flex items-start justify-between px-4 -mt-12 mb-3">
-          <div className="w-[120px] h-[120px] rounded-full bg-indigo-500 border-4 border-white flex items-center justify-center text-white text-4xl font-bold">
-            {initial}
+          <div className="w-[120px] h-[120px] rounded-full bg-indigo-500 border-4 border-white flex items-center justify-center text-white text-4xl font-bold overflow-hidden">
+            {user.profilePicture ? (
+              <img src={user.profilePicture} alt={user.userName} className="w-full h-full object-cover" />
+            ) : (
+              initial
+            )}
           </div>
           <div className="mt-14">
-            <UserPage userId={userId} />
+            <UserPage
+              userId={userId}
+              initialUser={user}
+              isOwnProfile={isOwnProfile}
+              initialFollowed={isFollowed}
+            />
           </div>
         </div>
 
@@ -59,6 +82,11 @@ const Page: React.FC<Props> = async ({ params }) => {
             {user.userName}
           </h1>
           <p className="text-[15px] text-[#536471]">@{user.userName}</p>
+
+          {user.bio && (
+            <p className="text-[15px] text-[#0F1419] mt-2">{user.bio}</p>
+          )}
+
           {user.createdAt && (
             <p className="text-[15px] text-[#536471] mt-2">
               Joined{" "}
@@ -70,42 +98,18 @@ const Page: React.FC<Props> = async ({ params }) => {
           )}
           <div className="flex gap-4 mt-3 text-[15px]">
             <span className="text-[#0F1419]">
-              <strong>0</strong>{" "}
+              <strong>{Array.isArray(user.follow) ? user.follow.length : 0}</strong>{" "}
               <span className="text-[#536471]">Following</span>
             </span>
             <span className="text-[#0F1419]">
-              <strong>0</strong>{" "}
+              <strong>{user.followersCount ?? 0}</strong>{" "}
               <span className="text-[#536471]">Followers</span>
             </span>
           </div>
         </div>
 
-        {/* Profile tabs */}
-        <div className="flex border-b border-[#EFF3F4]">
-          {["Posts", "Replies", "Media", "Likes"].map((tab, i) => (
-            <button
-              key={tab}
-              className={`flex-1 py-4 text-[15px] font-medium text-[#536471] hover:bg-[#E7E7E8] transition-colors relative ${
-                i === 0 ? "text-[#0F1419] font-bold" : ""
-              }`}
-            >
-              {tab}
-              {i === 0 && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#1D9BF0] rounded-full" />
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Empty state */}
-        <div className="flex flex-col items-center px-8 pt-12">
-          <h2 className="text-[31px] font-extrabold text-[#0F1419] mb-2">
-            No posts yet
-          </h2>
-          <p className="text-[15px] text-[#536471] text-center">
-            When {user.userName} posts, their posts will show up here.
-          </p>
-        </div>
+        {/* Profile tabs + tweets */}
+        <UserProfileTweets tweets={tweets} userName={user.userName} />
       </div>
     </div>
   );
