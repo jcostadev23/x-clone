@@ -28,6 +28,14 @@ const tweetSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  retweets: {
+    type: [String],
+    default: [],
+  },
+  bookmarkedBy: {
+    type: [String],
+    default: [],
+  },
   comments: {
     type: [commentSchema],
     default: [],

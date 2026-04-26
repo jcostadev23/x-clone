@@ -27,6 +27,9 @@ const usersSchema = new mongoose.Schema({
     default: Date.now,
   },
   follow: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  bio: { type: String, default: "", maxlength: 160 },
+  profilePicture: { type: String, default: "" },
+  coverPhoto: { type: String, default: "" },
 });
 
 usersSchema.index({ userName: 1 }, { unique: true });

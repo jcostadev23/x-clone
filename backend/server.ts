@@ -7,6 +7,9 @@ import { connectDataBase, cors, express, path, port } from "./dependecies";
 import tweetsRouter from "./routes/tweets";
 import usersRouter from "./routes/users";
 import userSignInRouter from "./routes/userSignIn";
+import notificationsRouter from "./routes/notifications";
+import messagesRouter from "./routes/messages";
+import searchRouter from "./routes/search";
 
 connectDataBase();
 
@@ -47,5 +50,8 @@ app.get("/", (_req, res) => {
 app.use("/tweets", generalLimiter, tweetsRouter);
 app.use("/users", generalLimiter, usersRouter);
 app.use("/signin", authLimiter, userSignInRouter);
+app.use("/notifications", generalLimiter, notificationsRouter);
+app.use("/messages", generalLimiter, messagesRouter);
+app.use("/search", generalLimiter, searchRouter);
 
 app.listen(port, () => console.log(`Server listening on port: ${port}`));
