@@ -4,7 +4,8 @@ import { fetchAndSetTweets } from "@/helpers";
 import { useAppContext } from "@/hooks/useAppContext";
 import { useReducerContext } from "@/hooks/useReducer";
 import { Tweet } from "@/types";
-import { addComment, deleteTweet, tweetBookmark, tweetLikeUnlike, tweetRetweet } from "@/utils/apiCalls";
+import { addComment, deleteTweet, notInterested, tweetBookmark, tweetLikeUnlike, tweetRetweet } from "@/utils/apiCalls";
+import TweetDetailModal from "@/components/TweetDetailModal";
 import { useCallback, useRef, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { FaBookmark, FaRegBookmark, FaHeart, FaRegHeart } from "react-icons/fa";
@@ -12,11 +13,14 @@ import { BiRepost } from "react-icons/bi";
 import { FaRegComment } from "react-icons/fa";
 import { IoMdStats } from "react-icons/io";
 import { RiShare2Line } from "react-icons/ri";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiOutlineTrash, HiOutlineFlag, HiOutlineEyeOff, HiOutlineInformationCircle } from "react-icons/hi";
+import { MdOutlineSignalCellularAlt, MdOutlineWifiOff, MdOutlineBlock } from "react-icons/md";
 import Link from "next/link";
 import CommentForm from "./components/CommentForm";
 
 type Props = { tweet: Tweet };
+
+type Toast = { message: string; id: number };
 
 const TweetCard: React.FC<Props> = ({ tweet }) => {
   const { startLoading, stopLoading, user } = useAppContext();
@@ -25,12 +29,22 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
   const [comment, setComment] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookmarked, setBookmarked] = useState(tweet.bookmarkedBy?.includes(user?.userId as string) ?? false);
+  const [interactionsOpen, setInteractionsOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const liked = tweet.likes.includes(user?.userId as string);
   const retweeted = tweet.retweets?.includes(user?.userId as string) ?? false;
   const isOwner = tweet.userId === user?.userId;
   const initial = tweet.userName?.[0]?.toUpperCase() ?? "?";
+
+  const showToast = useCallback((message: string) => {
+    const id = Date.now();
+    setToasts((t) => [...t, { message, id }]);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3000);
+  }, []);
 
   const handleLike = useCallback(async () => {
     if (!tweet._id) return;
@@ -59,6 +73,13 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
     stopLoading();
   }, [dispatch, startLoading, stopLoading, tweet._id]);
 
+  const handleNotInterested = useCallback(async () => {
+    if (!tweet._id) return;
+    setMenuOpen(false);
+    setHidden(true);
+    await notInterested(tweet._id);
+  }, [tweet._id]);
+
   const handleComment = useCallback(async () => {
     if (!comment.trim() || !tweet._id) return;
     startLoading();
@@ -69,8 +90,25 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
     stopLoading();
   }, [comment, dispatch, startLoading, stopLoading, tweet._id, tweet.userId]);
 
+  if (hidden) return null;
+
   return (
-    <article data-cy="tweet-card" className="border-b border-[#EFF3F4] px-4 py-3 hover:bg-black/[0.02] cursor-pointer transition-colors relative">
+    <article
+      data-cy="tweet-card"
+      className="border-b border-[#EFF3F4] px-4 py-3 hover:bg-black/[0.02] cursor-pointer transition-colors relative"
+      onClick={() => setDetailOpen(true)}
+    >
+      {/* Toast notifications */}
+      {toasts.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none">
+          {toasts.map((t) => (
+            <div key={t.id} className="bg-[#1D9BF0] text-white text-[15px] font-medium px-5 py-3 rounded-full shadow-lg animate-fade-in">
+              {t.message}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex gap-3">
         {/* Avatar */}
         <Link href={`/user/${tweet.userId}`} onClick={(e) => e.stopPropagation()}>
@@ -103,8 +141,8 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
                 <BsThreeDots size={16} />
               </button>
               {menuOpen && (
-                <div className="absolute right-0 top-8 z-50 bg-white rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.15)] border border-[#EFF3F4] min-w-[200px] py-1 overflow-hidden">
-                  {isOwner && (
+                <div className="absolute right-0 top-8 z-50 bg-white rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.15)] border border-[#EFF3F4] min-w-[250px] py-1 overflow-hidden">
+                  {isOwner ? (
                     <button
                       className="w-full flex items-center gap-3 px-4 py-3 text-[15px] font-bold text-red-500 hover:bg-[#FFF0F0] transition-colors"
                       onClick={(e) => { e.stopPropagation(); handleDelete(); }}
@@ -112,13 +150,64 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
                       <HiOutlineTrash size={18} />
                       Delete
                     </button>
+                  ) : (
+                    <button
+                      className="w-full flex items-center gap-3 px-4 py-3 text-[15px] font-bold text-[#0F1419] hover:bg-[#F7F9F9] transition-colors"
+                      onClick={(e) => { e.stopPropagation(); handleNotInterested(); }}
+                    >
+                      <HiOutlineEyeOff size={18} />
+                      Not interested in this post
+                    </button>
                   )}
+
                   <button
                     className="w-full flex items-center gap-3 px-4 py-3 text-[15px] text-[#0F1419] hover:bg-[#F7F9F9] transition-colors"
-                    onClick={(e) => { e.stopPropagation(); handleBookmark(); setMenuOpen(false); }}
+                    onClick={(e) => { e.stopPropagation(); setInteractionsOpen(true); setMenuOpen(false); }}
+                  >
+                    <MdOutlineSignalCellularAlt size={18} />
+                    View post interactions
+                  </button>
+
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 text-[15px] text-[#0F1419] hover:bg-[#F7F9F9] transition-colors"
+                    onClick={(e) => { e.stopPropagation(); setMenuOpen(false); handleBookmark(); }}
                   >
                     {bookmarked ? <FaBookmark size={16} /> : <FaRegBookmark size={16} />}
                     {bookmarked ? "Remove bookmark" : "Bookmark"}
+                  </button>
+
+                  <div className="border-t border-[#EFF3F4] my-1" />
+
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 text-[15px] text-[#0F1419] hover:bg-[#F7F9F9] transition-colors"
+                    onClick={(e) => { e.stopPropagation(); setMenuOpen(false); showToast("Report submitted. Thank you for your feedback."); }}
+                  >
+                    <HiOutlineFlag size={18} />
+                    Report post
+                  </button>
+
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 text-[15px] text-[#0F1419] hover:bg-[#F7F9F9] transition-colors"
+                    onClick={(e) => { e.stopPropagation(); setMenuOpen(false); showToast("Post marked as spam."); }}
+                  >
+                    <MdOutlineBlock size={18} />
+                    Mark as spam
+                  </button>
+
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 text-[15px] text-[#0F1419] hover:bg-[#F7F9F9] transition-colors"
+                    onClick={(e) => { e.stopPropagation(); setMenuOpen(false); showToast("Community note requested."); }}
+                  >
+                    <HiOutlineInformationCircle size={18} />
+                    Request community note
+                  </button>
+
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 text-[15px] text-[#0F1419] hover:bg-[#F7F9F9] transition-colors"
+                    onClick={(e) => { e.stopPropagation(); setMenuOpen(false); showToast("Post saved for offline reading."); }}
+                  >
+                    <MdOutlineWifiOff size={18} />
+                    Add to offline
                   </button>
                 </div>
               )}
@@ -174,7 +263,10 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
             </button>
 
             {/* Views */}
-            <button className="group flex items-center gap-1">
+            <button
+              className="group flex items-center gap-1"
+              onClick={(e) => { e.stopPropagation(); setInteractionsOpen(true); }}
+            >
               <span className="p-2 rounded-full group-hover:bg-[#1D9BF0]/10 group-hover:text-[#1D9BF0] transition-colors">
                 <IoMdStats size={18} />
               </span>
@@ -208,6 +300,41 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
         />
       )}
 
+      {/* Interactions modal */}
+      {interactionsOpen && (
+        <>
+          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center" onClick={() => setInteractionsOpen(false)}>
+            <div className="bg-white rounded-2xl shadow-xl w-[320px] p-6" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-[20px] font-bold text-[#0F1419] mb-4">Post interactions</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-[15px]">
+                  <span className="text-[#536471]">Likes</span>
+                  <span className="font-bold text-[#0F1419]">{tweet.likes.length}</span>
+                </div>
+                <div className="flex items-center justify-between text-[15px]">
+                  <span className="text-[#536471]">Reposts</span>
+                  <span className="font-bold text-[#0F1419]">{tweet.retweets?.length ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between text-[15px]">
+                  <span className="text-[#536471]">Replies</span>
+                  <span className="font-bold text-[#0F1419]">{tweet.comments.length}</span>
+                </div>
+                <div className="flex items-center justify-between text-[15px]">
+                  <span className="text-[#536471]">Bookmarks</span>
+                  <span className="font-bold text-[#0F1419]">{tweet.bookmarkedBy?.length ?? 0}</span>
+                </div>
+              </div>
+              <button
+                className="mt-6 w-full bg-[#0F1419] text-white font-bold rounded-full py-2.5 hover:bg-[#272C30] transition-colors text-[15px]"
+                onClick={() => setInteractionsOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Comment modal */}
       <CommentForm
         form={{ isOpen: commentOpen, comment }}
@@ -220,6 +347,12 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
         }}
         onSubmit={handleComment}
         placeHolder="Post your reply"
+      />
+
+      {/* Tweet detail modal */}
+      <TweetDetailModal
+        tweetId={detailOpen ? (tweet._id ?? null) : null}
+        onClose={() => setDetailOpen(false)}
       />
     </article>
   );

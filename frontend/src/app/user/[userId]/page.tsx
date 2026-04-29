@@ -3,6 +3,8 @@ import UserPage from "./UserPage";
 import UserProfileTweets from "./UserProfileTweets";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 type Props = {
   params: Promise<{ userId: string }>;
@@ -10,11 +12,15 @@ type Props = {
 
 const Page = async ({ params }: Props) => {
   const { userId } = await params;
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) redirect("/signin");
 
   const [user, tweets, me] = await Promise.all([
-    getUserById(userId),
-    getUserTweets(userId),
-    getMe(),
+    getUserById(userId, token),
+    getUserTweets(userId, token),
+    getMe(token),
   ]);
 
   if (!user) {
@@ -27,9 +33,7 @@ const Page = async ({ params }: Props) => {
 
   const initial = user.userName?.[0]?.toUpperCase() ?? "?";
   const isOwnProfile = me?.userId === userId;
-  const isFollowed = Array.isArray(user.follow)
-    ? user.follow.map(String).includes(me?.userId ?? "")
-    : false;
+  const isFollowed = user.isFollowedByCurrentUser ?? false;
 
   return (
     <div className="min-h-screen bg-white">

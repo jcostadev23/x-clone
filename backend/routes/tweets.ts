@@ -19,16 +19,26 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: any) => {
     }
 
     const following = currentUser.follow;
+    const hidden = currentUser.hiddenPosts ?? [];
     const limit = parseInt(req.query.limit as string) || 7;
+    const feedType = req.query.feed as string;
 
-    const [followTweets, otherTweets] = await Promise.all([
-      Tweet.find({ userId: { $in: following } }).sort({ date: -1 }).limit(5),
-      Tweet.find({ userId: { $nin: [...following, userId] } }).sort({ date: -1 }).limit(limit),
-    ]);
+    let tweets: any[];
 
-    const tweetsDeepCopy = JSON.parse(JSON.stringify([...followTweets, ...otherTweets]));
-    const finalTweets = tweetsDeepCopy.map(formatTweet);
+    if (feedType === "following") {
+      tweets = await Tweet.find({
+        userId: { $in: following },
+        _id: { $nin: hidden },
+      }).sort({ date: -1 }).limit(limit);
+    } else {
+      const [followTweets, otherTweets] = await Promise.all([
+        Tweet.find({ userId: { $in: following }, _id: { $nin: hidden } }).sort({ date: -1 }).limit(5),
+        Tweet.find({ userId: { $nin: [...following, userId] }, _id: { $nin: hidden } }).sort({ date: -1 }).limit(limit),
+      ]);
+      tweets = [...followTweets, ...otherTweets];
+    }
 
+    const finalTweets = JSON.parse(JSON.stringify(tweets)).map(formatTweet);
     res.json({ success: true, data: finalTweets });
   } catch {
     res.status(500).json({ success: false, error: "Something went wrong" });
@@ -77,6 +87,42 @@ router.post("/", authenticateToken, async (req: AuthRequest, res: any) => {
 
     await newTweet.save();
     res.status(201).json({ success: true, data: newTweet });
+  } catch {
+    res.status(500).json({ success: false, error: "Something went wrong" });
+  }
+});
+
+router.get("/:id", authenticateToken, async (req: AuthRequest, res: any) => {
+  try {
+    const tweet = await Tweet.findById(req.params.id);
+    if (!tweet) {
+      return res.status(404).json({ success: false, error: "Tweet not found" });
+    }
+
+    // Resolve liker names from user IDs
+    const likerNames = tweet.likes.length
+      ? (await User.find({ _id: { $in: tweet.likes } }).select("userName")).map((u: any) => u.userName)
+      : [];
+
+    // Back-fill userName for comments that were stored before the schema change
+    const missingIds = tweet.comments
+      .filter((c: any) => !c.userName)
+      .map((c: any) => c.id);
+
+    const userMap: Record<string, string> = {};
+    if (missingIds.length) {
+      const users = await User.find({ _id: { $in: missingIds } }).select("_id userName");
+      users.forEach((u: any) => { userMap[u._id.toString()] = u.userName; });
+    }
+
+    const tweetObj = JSON.parse(JSON.stringify(tweet));
+    const commentsWithNames = tweetObj.comments.map((c: any) => ({
+      ...c,
+      userName: c.userName || userMap[c.id] || c.id,
+    }));
+
+    const formatted = formatTweet({ ...tweetObj, comments: commentsWithNames });
+    res.json({ success: true, data: { ...formatted, likerNames } });
   } catch {
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
@@ -209,7 +255,7 @@ router.put("/:id/comment", authenticateToken, async (req: AuthRequest, res: any)
       return res.status(404).json({ success: false, error: "Tweet not found" });
     }
 
-    tweet.comments.push({ id: req.user.userId, comment: comment.trim() });
+    tweet.comments.push({ id: req.user.userId, userName: req.user.userName, comment: comment.trim() });
 
     if (tweet.userId !== req.user.userId) {
       await Notification.create({
@@ -223,6 +269,31 @@ router.put("/:id/comment", authenticateToken, async (req: AuthRequest, res: any)
 
     await tweet.save();
     res.json({ success: true, data: tweet });
+  } catch {
+    res.status(500).json({ success: false, error: "Something went wrong" });
+  }
+});
+
+router.put("/:id/not-interested", authenticateToken, async (req: AuthRequest, res: any) => {
+  try {
+    const userId = req.user.userId;
+    const tweetId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    const alreadyHidden = user.hiddenPosts.map(String).includes(tweetId);
+
+    if (alreadyHidden) {
+      user.hiddenPosts = user.hiddenPosts.filter((id: any) => id.toString() !== tweetId);
+    } else {
+      user.hiddenPosts.push(tweetId as any);
+    }
+
+    await user.save();
+    res.json({ success: true, hidden: !alreadyHidden });
   } catch {
     res.status(500).json({ success: false, error: "Something went wrong" });
   }

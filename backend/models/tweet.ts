@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const commentSchema = new mongoose.Schema(
   {
     id: { type: String, required: true },
+    userName: { type: String, default: "" },
     comment: { type: String, required: true, maxlength: 280 },
   },
   { _id: false }

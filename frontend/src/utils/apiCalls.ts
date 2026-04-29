@@ -1,4 +1,4 @@
-import { Comment, Conversation, ListParams, Message, Notification, ProfileUser, Tweet, User } from "@/types";
+import { Comment, Conversation, ListParams, Message, Notification, ProfileUser, Tweet, TweetDetail, User } from "@/types";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}`;
 
@@ -21,12 +21,15 @@ export const getAllTweets = async (params?: ListParams) => {
   return tweets.data;
 };
 
-export const getUserTweets = async (userId: string) => {
+export const getUserTweets = async (userId: string, token?: string) => {
   try {
     const resp = await fetch(`${url}/tweets/user/${userId}`, {
       method: "GET",
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Cookie: `token=${token}` } : {}),
+      },
     });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
@@ -194,12 +197,15 @@ export const signIn = async (user: { userName: string; password: string }) => {
   }
 };
 
-export const getUserById = async (userId: string): Promise<ProfileUser | null> => {
+export const getUserById = async (userId: string, token?: string): Promise<ProfileUser | null> => {
   try {
     const response = await fetch(`${url}/users/${userId}`, {
       method: "GET",
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Cookie: `token=${token}` } : {}),
+      },
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const user = await response.json();
@@ -271,12 +277,15 @@ export const unfollow = async (userId: string) => {
   }
 };
 
-export const getMe = async () => {
+export const getMe = async (token?: string) => {
   try {
     const resp = await fetch(`${url}/users/me`, {
       method: "GET",
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Cookie: `token=${token}` } : {}),
+      },
     });
     if (!resp.ok) return null;
     const me = await resp.json();
@@ -376,5 +385,83 @@ export const sendMessage = async (toUserId: string, text: string): Promise<Messa
   } catch (error) {
     console.error("Error sending message:", error);
     return null;
+  }
+};
+
+export const getTweetDetail = async (tweetId: string): Promise<TweetDetail | null> => {
+  try {
+    const resp = await fetch(`${url}/tweets/${tweetId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    return data.data as TweetDetail;
+  } catch (error) {
+    console.error("Error fetching tweet detail:", error);
+    return null;
+  }
+};
+
+export const notInterested = async (tweetId: string) => {
+  try {
+    const resp = await fetch(`${url}/tweets/${tweetId}/not-interested`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return await resp.json();
+  } catch (error) {
+    console.error("Error marking not interested:", error);
+    return null;
+  }
+};
+
+export const signOut = async () => {
+  try {
+    await fetch(`${url}/users/signout`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Error signing out:", error);
+  }
+};
+
+export const getFollowingTweets = async (token?: string): Promise<Tweet[]> => {
+  try {
+    const resp = await fetch(`${url}/tweets?feed=following`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Cookie: `token=${token ?? ""}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    return data.data as Tweet[];
+  } catch (error) {
+    console.warn("Error fetching following tweets:", error);
+    return [];
+  }
+};
+
+export const getUserSuggestions = async (): Promise<ProfileUser[]> => {
+  try {
+    const resp = await fetch(`${url}/users/suggestions`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    return data.data as ProfileUser[];
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+    return [];
   }
 };

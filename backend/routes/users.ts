@@ -104,21 +104,51 @@ router.get("/search", authenticateToken, async (req: any, res: any) => {
   }
 });
 
+router.get("/suggestions", authenticateToken, async (req: any, res: any) => {
+  try {
+    const userId = req.user.userId;
+    const currentUser = await User.findById(userId).select("follow");
+    if (!currentUser) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    const excludeIds = [...currentUser.follow.map(String), userId];
+    const suggestions = await User.find({ _id: { $nin: excludeIds } })
+      .select(SAFE_USER_FIELDS)
+      .limit(5);
+
+    res.json({ success: true, data: suggestions });
+  } catch {
+    res.status(500).json({ success: false, error: "Something went wrong getting suggestions" });
+  }
+});
+
 router.get("/:userId", authenticateToken, async (req: any, res: any) => {
   try {
     const { userId } = req.params;
-    const user = await User.findById(userId).select(SAFE_USER_FIELDS);
+    const currentUserId = req.user.userId;
+
+    const [user, followersCount, currentUser] = await Promise.all([
+      User.findById(userId).select(SAFE_USER_FIELDS),
+      User.countDocuments({ follow: userId }),
+      User.findById(currentUserId).select("follow"),
+    ]);
 
     if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    const followersCount = await User.countDocuments({ follow: userId });
+    const isFollowedByCurrentUser = currentUser?.follow.map(String).includes(userId) ?? false;
 
-    res.json({ success: true, data: { ...user.toObject(), followersCount } });
+    res.json({ success: true, data: { ...user.toObject(), followersCount, isFollowedByCurrentUser } });
   } catch {
     res.status(500).json({ success: false, error: "Something went wrong getting the user" });
   }
+});
+
+router.post("/signout", (_req: any, res: any) => {
+  res.clearCookie("token", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict" });
+  res.json({ success: true });
 });
 
 router.post("/follow/:userId", authenticateToken, async (req: any, res: any) => {

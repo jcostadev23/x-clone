@@ -1,7 +1,7 @@
 "use client";
 
+import TweetDetailModal from "@/components/TweetDetailModal";
 import { Tweet } from "@/types";
-import Link from "next/link";
 import { useState } from "react";
 import { FaRegHeart, FaRegComment } from "react-icons/fa";
 import { BiRepost } from "react-icons/bi";
@@ -13,6 +13,7 @@ type Props = {
 
 const UserProfileTweets: React.FC<Props> = ({ tweets, userName }) => {
   const [activeTab, setActiveTab] = useState(0);
+  const [selectedTweetId, setSelectedTweetId] = useState<string | null>(null);
   const tabs = ["Posts", "Replies", "Media", "Likes"];
 
   return (
@@ -47,7 +48,11 @@ const UserProfileTweets: React.FC<Props> = ({ tweets, userName }) => {
             </div>
           ) : (
             tweets.map((tweet) => (
-              <article key={tweet._id} className="border-b border-[#EFF3F4] px-4 py-3 hover:bg-black/[0.02] transition-colors">
+              <article
+                key={tweet._id}
+                className="border-b border-[#EFF3F4] px-4 py-3 hover:bg-black/[0.02] transition-colors cursor-pointer"
+                onClick={() => setSelectedTweetId(tweet._id ?? null)}
+              >
                 <div className="flex gap-3">
                   <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                     {tweet.userName?.[0]?.toUpperCase()}
@@ -59,9 +64,18 @@ const UserProfileTweets: React.FC<Props> = ({ tweets, userName }) => {
                     </div>
                     <p className="text-[15px] text-[#0F1419] mt-0.5 break-words whitespace-pre-wrap">{tweet.description}</p>
                     <div className="flex items-center gap-6 mt-2 text-[#536471] text-[13px]">
-                      <span className="flex items-center gap-1.5"><FaRegComment size={14} />{tweet.comments.length || ""}</span>
-                      <span className="flex items-center gap-1.5"><BiRepost size={16} />{tweet.retweets?.length || ""}</span>
-                      <span className="flex items-center gap-1.5"><FaRegHeart size={14} />{tweet.likes.length || ""}</span>
+                      <span className="flex items-center gap-1.5">
+                        <FaRegComment size={14} />
+                        {tweet.comments.length || ""}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <BiRepost size={16} />
+                        {tweet.retweets?.length || ""}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <FaRegHeart size={14} />
+                        {tweet.likes.length || ""}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -80,6 +94,12 @@ const UserProfileTweets: React.FC<Props> = ({ tweets, userName }) => {
           </p>
         </div>
       )}
+
+      {/* Tweet detail modal */}
+      <TweetDetailModal
+        tweetId={selectedTweetId}
+        onClose={() => setSelectedTweetId(null)}
+      />
     </>
   );
 };
