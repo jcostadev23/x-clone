@@ -17,6 +17,10 @@ const {
   postUser,
   getMe,
   getUserById,
+  notInterested,
+  signOut,
+  getFollowingTweets,
+  getUserSuggestions,
 } = await import("../utils/apiCalls");
 
 const ok = (body: unknown) =>
@@ -250,5 +254,113 @@ describe("getUserById", () => {
     mockFetch.mockResolvedValue(fail(404));
     const result = await getUserById("nonexistent");
     expect(result).toBeNull();
+  });
+});
+
+// ─── notInterested ────────────────────────────────────────────────────────────
+
+describe("notInterested", () => {
+  it("returns the response on success", async () => {
+    mockFetch.mockResolvedValue(ok({ success: true, hidden: true }));
+    const result = await notInterested("tweet-1");
+    expect(result).toEqual({ success: true, hidden: true });
+  });
+
+  it("sends PUT to the correct endpoint", async () => {
+    mockFetch.mockResolvedValue(ok({ success: true, hidden: true }));
+    await notInterested("tweet-99");
+    const [url, options] = mockFetch.mock.calls[0];
+    expect(url).toContain("/tweets/tweet-99/not-interested");
+    expect((options as RequestInit).method).toBe("PUT");
+  });
+
+  it("returns null on HTTP error", async () => {
+    mockFetch.mockResolvedValue(fail(500));
+    const result = await notInterested("tweet-1");
+    expect(result).toBeNull();
+  });
+
+  it("returns null when fetch throws", async () => {
+    mockFetch.mockRejectedValue(new Error("offline"));
+    const result = await notInterested("tweet-1");
+    expect(result).toBeNull();
+  });
+});
+
+// ─── signOut ──────────────────────────────────────────────────────────────────
+
+describe("signOut", () => {
+  it("calls POST /users/signout", async () => {
+    mockFetch.mockResolvedValue(ok({ success: true }));
+    await signOut();
+    const [url, options] = mockFetch.mock.calls[0];
+    expect(url).toContain("/users/signout");
+    expect((options as RequestInit).method).toBe("POST");
+  });
+
+  it("does not throw when fetch fails", async () => {
+    mockFetch.mockRejectedValue(new Error("offline"));
+    await expect(signOut()).resolves.toBeUndefined();
+  });
+});
+
+// ─── getFollowingTweets ───────────────────────────────────────────────────────
+
+describe("getFollowingTweets", () => {
+  it("returns tweets on success", async () => {
+    const tweets = [{ _id: "1", description: "hello" }];
+    mockFetch.mockResolvedValue(ok({ data: tweets }));
+    const result = await getFollowingTweets();
+    expect(result).toEqual(tweets);
+  });
+
+  it("sends request to /tweets with feed=following param", async () => {
+    mockFetch.mockResolvedValue(ok({ data: [] }));
+    await getFollowingTweets();
+    const [url] = mockFetch.mock.calls[0];
+    expect(url).toContain("/tweets?feed=following");
+  });
+
+  it("returns [] on HTTP error", async () => {
+    mockFetch.mockResolvedValue(fail(401));
+    const result = await getFollowingTweets();
+    expect(result).toEqual([]);
+  });
+
+  it("returns [] when fetch throws", async () => {
+    mockFetch.mockRejectedValue(new Error("offline"));
+    const result = await getFollowingTweets();
+    expect(result).toEqual([]);
+  });
+});
+
+// ─── getUserSuggestions ───────────────────────────────────────────────────────
+
+describe("getUserSuggestions", () => {
+  it("returns user list on success", async () => {
+    const users = [{ _id: "u1", userName: "bob" }];
+    mockFetch.mockResolvedValue(ok({ data: users }));
+    const result = await getUserSuggestions();
+    expect(result).toEqual(users);
+  });
+
+  it("sends GET to /users/suggestions", async () => {
+    mockFetch.mockResolvedValue(ok({ data: [] }));
+    await getUserSuggestions();
+    const [url, options] = mockFetch.mock.calls[0];
+    expect(url).toContain("/users/suggestions");
+    expect((options as RequestInit).method).toBe("GET");
+  });
+
+  it("returns [] on HTTP error", async () => {
+    mockFetch.mockResolvedValue(fail(500));
+    const result = await getUserSuggestions();
+    expect(result).toEqual([]);
+  });
+
+  it("returns [] when fetch throws", async () => {
+    mockFetch.mockRejectedValue(new Error("offline"));
+    const result = await getUserSuggestions();
+    expect(result).toEqual([]);
   });
 });

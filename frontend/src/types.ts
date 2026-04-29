@@ -1,5 +1,6 @@
 export type Comment = {
   id: string;
+  userName?: string;
   comment: string;
 };
 
@@ -71,4 +72,9 @@ export type ProfileUser = {
   profilePicture: string;
   coverPhoto: string;
   followersCount: number;
+  isFollowedByCurrentUser?: boolean;
+};
+
+export type TweetDetail = Tweet & {
+  likerNames: string[];
 };

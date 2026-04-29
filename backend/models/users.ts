@@ -27,6 +27,7 @@ const usersSchema = new mongoose.Schema({
     default: Date.now,
   },
   follow: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  hiddenPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tweet" }],
   bio: { type: String, default: "", maxlength: 160 },
   profilePicture: { type: String, default: "" },
   coverPhoto: { type: String, default: "" },

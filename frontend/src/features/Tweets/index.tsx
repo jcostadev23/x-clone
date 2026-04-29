@@ -5,7 +5,7 @@ type Props = {
   tweets: Array<Tweet>;
 };
 
-const Tweets = async ({ tweets }: Props) => {
+const Tweets = ({ tweets }: Props) => {
   return (
     <>
       {tweets?.map((tweet) => (

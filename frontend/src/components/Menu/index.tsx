@@ -1,8 +1,10 @@
 "use client";
 
 import { useAppContext } from "@/hooks/useAppContext";
+import { signOut } from "@/utils/apiCalls";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 import {
   GoHome,
   GoHomeFill,
@@ -19,6 +21,7 @@ import {
   FaRegBookmark,
   FaRegUser,
 } from "react-icons/fa";
+import { HiArrowRightOnRectangle } from "react-icons/hi2";
 
 const XLogo = () => (
   <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current" aria-hidden="true">
@@ -36,7 +39,15 @@ type NavItem = {
 const Menu = () => {
   const { user } = useAppContext();
   const pathname = usePathname();
+  const router = useRouter();
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
   const initial = user?.userName?.[0]?.toUpperCase() ?? "?";
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/signin");
+  };
 
   const navItems: NavItem[] = [
     {
@@ -131,21 +142,40 @@ const Menu = () => {
         <span className="hidden xl:block text-[17px]">Post</span>
       </Link>
 
-      {/* Bottom user profile */}
+      {/* Bottom user profile + sign out */}
       {user?.userName && (
-        <div className="mt-auto flex items-center gap-3 p-3 rounded-full hover:bg-[#E7E7E8] transition-colors cursor-pointer w-fit xl:w-full">
-          <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-            {initial}
-          </div>
-          <div className="hidden xl:flex flex-col min-w-0 flex-1">
-            <span className="font-bold text-[15px] text-[#0F1419] truncate leading-tight">
-              {user.userName}
-            </span>
-            <span className="text-[15px] text-[#536471] truncate leading-tight">
-              @{user.userName}
-            </span>
-          </div>
-          <HiOutlineSparkles size={18} className="hidden xl:block text-[#536471] ml-auto" />
+        <div className="mt-auto relative w-fit xl:w-full" ref={accountRef}>
+          {accountMenuOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setAccountMenuOpen(false)} />
+              <div className="absolute bottom-full left-0 mb-2 z-50 bg-white rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.15)] border border-[#EFF3F4] min-w-[250px] py-1 overflow-hidden">
+                <button
+                  className="w-full flex items-center gap-3 px-4 py-3 text-[15px] font-bold text-[#0F1419] hover:bg-[#F7F9F9] transition-colors"
+                  onClick={handleSignOut}
+                >
+                  <HiArrowRightOnRectangle size={18} />
+                  Sign out @{user.userName}
+                </button>
+              </div>
+            </>
+          )}
+          <button
+            className="flex items-center gap-3 p-3 rounded-full hover:bg-[#E7E7E8] transition-colors cursor-pointer w-full"
+            onClick={() => setAccountMenuOpen((o) => !o)}
+          >
+            <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+              {initial}
+            </div>
+            <div className="hidden xl:flex flex-col min-w-0 flex-1">
+              <span className="font-bold text-[15px] text-[#0F1419] truncate leading-tight">
+                {user.userName}
+              </span>
+              <span className="text-[15px] text-[#536471] truncate leading-tight">
+                @{user.userName}
+              </span>
+            </div>
+            <HiOutlineSparkles size={18} className="hidden xl:block text-[#536471] ml-auto" />
+          </button>
         </div>
       )}
     </aside>
